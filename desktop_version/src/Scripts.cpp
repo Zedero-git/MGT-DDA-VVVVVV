@@ -442,7 +442,7 @@ bool scriptclass::load(const std::string& name)
 
         "squeak(purple)",
         "text(purple,45,18,1)",
-        "Captain! You're ok!",
+        "Captain! You're ok!", //NOTE: Violet communication
         "speak_active",
 
         "squeak(cry)",
@@ -651,7 +651,7 @@ bool scriptclass::load(const std::string& name)
         };
         filllines(lines);
     }
-    else if (SDL_strcmp(t, "levelonecomplete_ending") == 0)
+    else if (SDL_strcmp(t, "levelonecomplete_ending") == 0) //NOTE: LEVEL 1 COMPLETE
     {
         static const char* lines[] = {
         "squeak(purple)",
@@ -700,6 +700,8 @@ bool scriptclass::load(const std::string& name)
         "untilfade()",
 
         "delay(15)",
+
+        /* DDA RESEARCH: SKIP CUTSCENE
 
         "squeak(player)",
         "text(player,0,0,2)",
@@ -976,6 +978,8 @@ bool scriptclass::load(const std::string& name)
         "position(purple,above)",
         "speak_active",
         "endtext",
+
+        SKIP CUTSCENE */
 
         "rescued(purple)",
         "play(4)",

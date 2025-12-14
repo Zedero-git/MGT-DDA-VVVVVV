@@ -2913,7 +2913,7 @@ void Game::updatestate(void)
             setstatedelay(75);
 
 
-            levelcomplete_textbox();
+             levelcomplete_textbox(); //NOTE: After this, skip to teleport
             break;
         case 3051:
             incstate();
@@ -6692,12 +6692,12 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
 #if !defined(MAKEANDPLAY)
         option(loc::gettext("play"));
 #endif
-        option(loc::gettext("levels"));
-        option(loc::gettext("options"));
-        if (loc::show_translator_menu)
-        {
-            option(loc::gettext("translator"));
-        }
+        //option(loc::gettext("levels"));
+        //option(loc::gettext("options"));
+        //if (loc::show_translator_menu)
+        //{
+        //    option(loc::gettext("translator"));
+        //}
         option(loc::gettext("credits"));
         option(loc::gettext("quit"));
         menuyoff = -10;
@@ -7308,7 +7308,7 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
                 {
                     option(loc::gettext("secret lab"));
                 }
-                option(loc::gettext("play modes"));
+                //option(loc::gettext("play modes"));
                 if (save_exists())
                 {
                     option(loc::gettext("new game"));

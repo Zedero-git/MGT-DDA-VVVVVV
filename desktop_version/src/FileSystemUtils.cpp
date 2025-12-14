@@ -1336,7 +1336,8 @@ static int PLATFORM_getOSDirectory(char* output, const size_t output_size)
         return 0;
     }
 
-    SDL_strlcat(output, "\\VVVVVV\\", MAX_PATH);
+    //SDL_strlcat(output, "\\VVVVVV\\", MAX_PATH); 
+    SDL_strlcat(output, "\\VVVVVV_DDA\\", MAX_PATH); //DDA RESEARCH: change path for editing, different than main game
     mkdir(output, 0777);
     return 1;
 #elif defined(__ANDROID__)

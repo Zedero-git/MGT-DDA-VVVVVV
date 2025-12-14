@@ -2079,6 +2079,10 @@ const short* labclass::loadlevel(int rx, int ry)
 
 
         obj.createentity((10 * 8)-4, (8 * 8) + 4, 14); //Teleporter!
+        
+        //DDA RESEARCH
+        //Endpoint of research game!!
+        //If player interacts with this teleporter, game should go to an end screen
 
         if(game.intimetrial)
         {

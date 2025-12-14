@@ -447,12 +447,14 @@ static void menuactionpress(void)
 #if !defined(MAKEANDPLAY)
         OPTION_ID(0) /* play */
 #endif
-        OPTION_ID(1) /* levels */
-        OPTION_ID(2) /* options */
-        if (loc::show_translator_menu)
-        {
-            OPTION_ID(3) /* translator */
-        }
+        //DDA RESEARCH: remove options on main menu
+        
+        //OPTION_ID(1) /* levels */
+        //OPTION_ID(2) /* options */
+        //if (loc::show_translator_menu)
+        //{
+        //    OPTION_ID(3) /* translator */
+        //}
         OPTION_ID(4) /* credits */
         OPTION_ID(5) /* quit */
 
@@ -919,26 +921,27 @@ static void menuactionpress(void)
         accessibilityoffset = 1;
         if (game.currentmenuoption == 0) {
             //unlock play options
-            music.playef(Sound_VIRIDIAN);
-            game.createmenu(Menu::unlockmenu);
-            map.nexttowercolour();
+            music.playef(Sound_CRY);
+            //game.createmenu(Menu::unlockmenu);
+            //map.nexttowercolour();
         }
 #endif
+        //DDA RESEARCH: removed options for cheating
         if (game.currentmenuoption == accessibilityoffset + 0) {
             //invincibility
             if (!game.ingame_titlemode || !game.incompetitive())
             {
                 if (!map.invincibility)
                 {
-                    game.createmenu(Menu::setinvincibility);
-                    map.nexttowercolour();
+                    //game.createmenu(Menu::setinvincibility);
+                    //map.nexttowercolour();
                 }
                 else
                 {
-                    map.invincibility = !map.invincibility;
-                    game.savestatsandsettings_menu();
+                    //map.invincibility = !map.invincibility;
+                    //game.savestatsandsettings_menu();
                 }
-                music.playef(Sound_VIRIDIAN);
+                music.playef(Sound_CRY);
             }
             else
             {
@@ -950,9 +953,9 @@ static void menuactionpress(void)
             //change game speed
             if (!game.ingame_titlemode || !game.incompetitive())
             {
-                game.createmenu(Menu::setslowdown);
-                map.nexttowercolour();
-                music.playef(Sound_VIRIDIAN);
+                //game.createmenu(Menu::setslowdown);
+                //map.nexttowercolour();
+                music.playef(Sound_CRY);
             }
             else
             {
@@ -1026,39 +1029,41 @@ static void menuactionpress(void)
             }
         }
 
+        //DDA RESEARCH: removed some options to avoid cheating
+
         if (game.currentmenuoption == gameplayoptionsoffset + 0)
         {
             //Toggle 30+ FPS
             music.playef(Sound_VIRIDIAN);
-            game.over30mode = !game.over30mode;
-            game.savestatsandsettings_menu();
+            //game.over30mode = !game.over30mode;
+            //game.savestatsandsettings_menu();
         }
         else if (game.currentmenuoption == gameplayoptionsoffset + 1)
         {
             //Speedrunner options
             music.playef(Sound_VIRIDIAN);
-            game.createmenu(Menu::speedrunneroptions);
-            map.nexttowercolour();
+            //game.createmenu(Menu::speedrunneroptions);
+            //map.nexttowercolour();
         }
         else if (game.currentmenuoption == gameplayoptionsoffset + 2)
         {
             //Advanced options
             music.playef(Sound_VIRIDIAN);
-            game.createmenu(Menu::advancedoptions);
-            map.nexttowercolour();
+            //game.createmenu(Menu::advancedoptions);
+            //map.nexttowercolour();
         }
         else if (game.currentmenuoption == gameplayoptionsoffset + 3)
         {
             //Clear Data
             music.playef(Sound_VIRIDIAN);
-            game.createmenu(Menu::cleardatamenu);
-            map.nexttowercolour();
+            //game.createmenu(Menu::cleardatamenu);
+            //map.nexttowercolour();
         }
         else if (game.currentmenuoption == gameplayoptionsoffset + 4)
         {
             music.playef(Sound_VIRIDIAN);
-            game.createmenu(Menu::clearcustomdatamenu);
-            map.nexttowercolour();
+            //game.createmenu(Menu::clearcustomdatamenu);
+            //map.nexttowercolour();
         }
         else if (game.currentmenuoption == gameplayoptionsoffset + 5) {
             //return to previous menu
@@ -1074,9 +1079,9 @@ static void menuactionpress(void)
         {
         case 0:
             //gameplay options
-            music.playef(Sound_VIRIDIAN);
-            game.createmenu(Menu::gameplayoptions);
-            map.nexttowercolour();
+            music.playef(Sound_CRY);
+            //game.createmenu(Menu::gameplayoptions);
+            //map.nexttowercolour();
             break;
         case 1:
             //graphic options
@@ -1955,21 +1960,24 @@ static void menuactionpress(void)
             music.playef(Sound_VIRIDIAN);
             startmode(Start_SECRETLAB);
         }
-        else if (game.currentmenuoption == sloffset+2)
-        {
-            //play modes
-            music.playef(Sound_VIRIDIAN);
-            game.createmenu(Menu::playmodes);
-            map.nexttowercolour();
-        }
-        else if (game.currentmenuoption == sloffset+3 && game.save_exists())
+        
+        //DDA RESEARCH: removed play modes
+        
+        //else if (game.currentmenuoption == sloffset+2)
+        //{
+        //    //play modes
+        //    music.playef(Sound_VIRIDIAN);
+        //    game.createmenu(Menu::playmodes);
+        //    map.nexttowercolour();
+        //}
+        else if (game.currentmenuoption == sloffset+2/*3*/ && game.save_exists())
         {
             //newgame
             music.playef(Sound_VIRIDIAN);
             game.createmenu(Menu::newgamewarning);
             map.nexttowercolour();
         }
-        else if (game.currentmenuoption == sloffset+ngoffset+4)
+        else if (game.currentmenuoption == sloffset+ngoffset+3)//4)
         {
             //back
             music.playef(Sound_VIRIDIAN);
