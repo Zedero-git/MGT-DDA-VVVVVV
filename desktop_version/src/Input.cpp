@@ -450,7 +450,7 @@ static void menuactionpress(void)
         //DDA RESEARCH: remove options on main menu
         
         //OPTION_ID(1) /* levels */
-        //OPTION_ID(2) /* options */
+        OPTION_ID(2) /* options */
         //if (loc::show_translator_menu)
         //{
         //    OPTION_ID(3) /* translator */
@@ -3055,7 +3055,7 @@ void gameinput(void)
 
     if (game.deathseq == -1 && (key.isDown(SDLK_r) || key.isDown(game.controllerButton_restart)) && !game.nodeathmode)// && map.custommode) //Have fun glitchrunners!
     {
-        game.deathseq = 30;
+        //game.deathseq = 30;
     }
 }
 

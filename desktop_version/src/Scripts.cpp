@@ -686,9 +686,12 @@ bool scriptclass::load(const std::string& name)
 
         "missing(purple)", //Set violet's rescue script to 0 to make the next bit easier
 
-        "gotoroom(4,10)",
-        "gotoposition(100,177,0)",
-        "createcrewman(150,177,purple,0,faceleft)",
+        //DDA RESEARCH: Change teleport to Laboratory
+        //"gotoroom(4,10)",
+        //"gotoposition(100,177,0)",
+        //"createcrewman(150,177,purple,0,faceleft)",
+        "gotoroom(2,16)",
+        "gotoposition(105,200,0)",
 
         //set all the crew as rescued to avoid companion issues!
         "flag(8,on)",

@@ -6693,7 +6693,7 @@ void Game::createmenu( enum Menu::MenuName t, bool samemenu/*= false*/ )
         option(loc::gettext("play"));
 #endif
         //option(loc::gettext("levels"));
-        //option(loc::gettext("options"));
+        option(loc::gettext("options"));
         //if (loc::show_translator_menu)
         //{
         //    option(loc::gettext("translator"));
