@@ -180,7 +180,6 @@ void Game::init(void)
     separate_interact = false;
     mapheld = false;
 
-
     pausescript = false;
     completestop = false;
     activeactivity = -1;
@@ -2865,6 +2864,7 @@ void Game::updatestate(void)
 
         case 3040:
             //Level complete! (Lab)
+            stopResearchGame = true;
             unlocknum(Unlock_LABORATORY_COMPLETE);
             lastsaved = 5;
             music.play(Music_PATHCOMPLETE);
@@ -2900,8 +2900,22 @@ void Game::updatestate(void)
             }
             break;
         case 3045:
-            setstate(3070);
-            setstatedelay(0);
+            //DDA RESEARCH: Changes to quit game after lab
+            //After 2 have been rescued, quit game
+            if (stopResearchGame)
+            {
+                graphics.fademode = FADE_START_FADEOUT;
+                music.fadeout();
+                setstate(3100);
+            }
+            else
+            {
+                setstate(3070);
+                setstatedelay(0);
+            } 
+            graphics.fademode = FADE_START_FADEOUT;
+            music.fadeout();
+            setstate(3100);
             break;
 
         case 3050:
@@ -7756,15 +7770,16 @@ void Game::quittomenu(void)
             returntomenu(Menu::playerworlds);
         }
     }
-    else if (save_exists() || anything_unlocked())
-    {
-        returntomenu(Menu::play);
-        if (!insecretlab)
-        {
-            //Select "continue"
-            currentmenuoption = 0;
-        }
-    }
+    //DDA RESEARCH: on quit, go to main menu
+    //else if (save_exists() || anything_unlocked())
+    //{
+    //    returntomenu(Menu::play);
+    //    if (!insecretlab)
+    //    {
+    //        //Select "continue"
+    //        currentmenuoption = 0;
+    //    }
+    //}
     else
     {
         createmenu(Menu::mainmenu);

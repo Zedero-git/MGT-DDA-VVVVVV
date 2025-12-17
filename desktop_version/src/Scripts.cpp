@@ -680,7 +680,7 @@ bool scriptclass::load(const std::string& name)
     else if (SDL_strcmp(t, "bigopenworld") == 0)
     {
         static const char* lines[] = {
-        "play(5)",
+        //"play(5)",
         "cutscene()",
         "untilbars()",
 
@@ -875,12 +875,12 @@ bool scriptclass::load(const std::string& name)
         "fadeout()",
         "untilfade()",
         "showplayer()",
-
+        */
         "flag(8,off)",
         "flag(9,off)",
         "flag(10,off)",
         "flag(11,off)",
-
+        /*
         "changeplayercolour(cyan)",
         "changemood(player,0)",
         "gotoroom(4,10)",
@@ -985,13 +985,13 @@ bool scriptclass::load(const std::string& name)
         SKIP CUTSCENE */
 
         "rescued(purple)",
-        "play(4)",
+        "play(3)",
 
         "endcutscene()",
         "untilbars()",
         "hascontrol()",
 
-        "createactivityzone(purple)",
+        //"createactivityzone(purple)",
         };
         filllines(lines);
     }

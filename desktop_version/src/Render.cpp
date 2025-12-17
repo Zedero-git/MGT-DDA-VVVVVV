@@ -2995,6 +2995,9 @@ static void rendermapcursor(const bool flashing)
 
 void maprender(void)
 {
+    //DDA RESEARCH: disable quicksaving with bool
+    bool quicksaveEnabled = false;
+    
     graphics.set_render_target(graphics.menuTexture);
     graphics.clear();
 
@@ -3336,37 +3339,51 @@ void maprender(void)
         {
             /* FIXME: The text here should be automatically "balance-wrapped" instead of hardcoding the width.
              * In fact, maybe print_wrap should balance-wrap by default. */
-            font::print_wrap(PR_CEN, -1, 174, loc::gettext("(Note: The game is autosaved at every teleporter.)"), 146, 146, 180, 12);
+            //font::print_wrap(PR_CEN, -1, 174, loc::gettext("(Note: The game is autosaved at every teleporter.)"), 146, 146, 180, 12);
         }
 
         if (!game.gamesaved)
         {
             char buffer[SCREEN_WIDTH_CHARS + 1];
-            vformat_buf(
-                buffer, sizeof(buffer),
-                loc::gettext("[Press {button} to save your game]"),
-                "button:but",
-                vformat_button(ActionSet_InGame, Action_InGame_ACTION)
-            );
+            
+            if (quicksaveEnabled) //DDA RESEARCH: disable quicksave
+            {
+                vformat_buf(
+                    buffer, sizeof(buffer),
+                    loc::gettext("[Press {button} to save your game]"),
+                    "button:but",
+                    vformat_button(ActionSet_InGame, Action_InGame_ACTION)
+                );
+            }
 
-            font::print(PR_CEN, -1, 80, buffer, 255 - help.glow*2, 255 - help.glow*2, 255 - help.glow);
+            font::print(PR_CEN, -1, 80, buffer, 255 - help.glow * 2, 255 - help.glow * 2, 255 - help.glow);
 
             if (map.custommode || !game.last_quicksave.exists)
             {
                 break;
             }
 
-            font::print(PR_CEN, -1, FLIP(100, 8), loc::gettext("Last Save:"), 164 - help.glow/4, 164 - help.glow/4, 164);
+            if (quicksaveEnabled) //DDA RESEARCH: disable quicksave
+            {
+                font::print(PR_CEN, -1, FLIP(100, 8), loc::gettext("Last Save:"), 164 - help.glow/4, 164 - help.glow/4, 164);
+            }
+            else
+            {
+                font::print(PR_CEN, -1, FLIP(100, 8), loc::gettext("Can't quicksave, sorry!"), 164 - help.glow / 4, 164 - help.glow / 4, 164);
+            }
 
             struct Game::Summary* last = &game.last_quicksave;
-            vformat_buf(
-                buffer, sizeof(buffer),
-                loc::gettext("{area}, {time}"),
-                "area:str, time:str",
-                loc::gettext_roomname_special(map.currentarea(last->saverx, last->savery)),
-                game.giventimestring(last->hours, last->minutes, last->seconds).c_str()
-            );
-
+            
+            if (quicksaveEnabled) //DDA RESEARCH: disable quicksave
+            {
+                vformat_buf(
+                    buffer, sizeof(buffer),
+                    loc::gettext("{area}, {time}"),
+                    "area:str, time:str",
+                    loc::gettext_roomname_special(map.currentarea(last->saverx, last->savery)),
+                    game.giventimestring(last->hours, last->minutes, last->seconds).c_str()
+                );
+            }
             font::print(PR_CEN, -1, FLIP(112, 8), buffer, 164 - help.glow/4, 164 - help.glow/4, 164);
             break;
         }

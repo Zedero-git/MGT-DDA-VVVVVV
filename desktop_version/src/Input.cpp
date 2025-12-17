@@ -3304,11 +3304,13 @@ static void mapmenuactionpress(const bool version2_2)
     {
         game.flashlight = 5;
         game.screenshake = 10;
-        music.playef(Sound_GAMESAVED);
+        music.playef(Sound_CRY); //DDA RESEARCH: Changed to CRY to show it's disabled
 
         game.savetime = game.timestring();
         game.savetrinkets = game.trinkets();
 
+        //DDA RESEARCH: Disable creating new quicksaves
+        /*
         bool success;
 
         if(map.custommodeforreal)
@@ -3321,6 +3323,7 @@ static void mapmenuactionpress(const bool version2_2)
         }
         game.gamesaved = success;
         game.gamesavefailed = !success;
+        */
     }
         break;
 

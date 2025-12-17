@@ -186,6 +186,10 @@ class Game
     char magic[16];
 
 public:
+    
+    //DDA RESEARCH: bool to stop research
+    bool stopResearchGame = false;
+    
     void init(void);
     void setdefaultcontrollerbuttons(void);
 
