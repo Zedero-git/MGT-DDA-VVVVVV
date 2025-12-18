@@ -2864,7 +2864,7 @@ void Game::updatestate(void)
 
         case 3040:
             //Level complete! (Lab)
-            stopResearchGame = true;
+            stopResearchGame = true; //DDA RESEARCH: Stop research on quit
             unlocknum(Unlock_LABORATORY_COMPLETE);
             lastsaved = 5;
             music.play(Music_PATHCOMPLETE);
@@ -2906,6 +2906,7 @@ void Game::updatestate(void)
             {
                 graphics.fademode = FADE_START_FADEOUT;
                 music.fadeout();
+                //DDA RESEARCH: Print data
                 setstate(3100);
             }
             else
@@ -5396,6 +5397,7 @@ void Game::deathsequence(void)
             music.nicefade = false;
         }
         deathcounts++;
+        ddaOnPlayerDeath(); //DDA RESEARCH: Track death in DDA system
         music.playef(Sound_CRY);
         if (INBOUNDS_VEC(i, obj.entities) && !noflashingmode)
         {
@@ -8054,4 +8056,649 @@ void Game::sabotage_time_trial(void)
 bool Game::isingamecompletescreen(void)
 {
     return (state >= 3501 && state <= 3518) || (state >= 3520 && state <= 3522);
+}
+
+
+//DDA RESEARCH
+
+int Game::ddaGetTotalGameSeconds()
+{
+    return hours * 3600 + minutes * 60 + seconds;
+}
+
+void Game::ddaInit()
+{
+    // Change to false for control group, true for experiment group
+    ddaEnabled = true;
+    
+    //Initialize all arrays first
+    for (int i = 0; i < DDA_MAX_ROOMS; i++)
+    {
+        ddaDeathThreshold[i] = 10;
+        ddaTimeThreshold[i] = 120;
+        ddaRoomHasDDA[i] = true;
+        ddaRoomLevel[i] = 1;
+        ddaAddCheckpoint1[i] = false;
+        ddaAddCheckpoint2[i] = false;
+    }
+
+    //===========================================
+    //SPACE STATION - TUTORIAL ROOMS (0-8): No DDA
+    //Note: Room 8 (Gantry and Dolly) counts as room 9
+    //so it has DDA, since it's used twice (top and bottom part, before and after Comms Relay)
+    //===========================================
+
+    for (int i = 0; i <= 8; i++)
+    {
+        ddaRoomHasDDA[i] = false;
+        ddaRoomLevel[i] = 0;
+    }
+
+    //===========================================
+    //SPACE STATION - Post-tutorial (9-22): Phase 1 DDA
+    //===========================================
+
+    // Room 9: Gantry and Dolly
+    ddaRoomLevel[9] = 1;
+    ddaDeathThreshold[9] = 6;
+    ddaTimeThreshold[9] = 60;
+
+    // Room 10: The Yes Men
+    ddaRoomLevel[10] = 1;
+    ddaDeathThreshold[10] = 6;
+    ddaTimeThreshold[10] = 60;
+
+    // Room 11: Stop and Reflect
+    ddaRoomLevel[11] = 1;
+    ddaDeathThreshold[11] = 7;
+    ddaTimeThreshold[11] = 70;
+
+    // Room 12: V Stitch
+    ddaRoomLevel[12] = 1;
+    ddaDeathThreshold[12] = 8;
+    ddaTimeThreshold[12] = 80;
+
+    // Room 13: B-B-B-Busted
+    ddaRoomLevel[13] = 1;
+    ddaDeathThreshold[13] = 8;
+    ddaTimeThreshold[13] = 80;
+
+    // Room 14: The Sensible Room
+    ddaRoomLevel[14] = 1;
+    ddaDeathThreshold[14] = 9;
+    ddaTimeThreshold[14] = 90;
+
+    // Room 15: Boo! Think Fast!
+    ddaRoomLevel[15] = 1;
+    ddaDeathThreshold[15] = 10;
+    ddaTimeThreshold[15] = 90;
+
+    // Room 16: Driller
+    ddaRoomLevel[16] = 1;
+    ddaDeathThreshold[16] = 10;
+    ddaTimeThreshold[16] = 100;
+
+    // Room 17: Exhaust Chute
+    ddaRoomLevel[17] = 1;
+    ddaDeathThreshold[17] = 10;
+    ddaTimeThreshold[17] = 100;
+
+    // Room 18: Sorrow
+    ddaRoomLevel[18] = 1;
+    ddaDeathThreshold[18] = 11;
+    ddaTimeThreshold[18] = 110;
+
+    // Room 19: Quicksand
+    ddaRoomLevel[19] = 1;
+    ddaDeathThreshold[19] = 12;
+    ddaTimeThreshold[19] = 120;
+
+    // Room 20: The Tomb of Mad Carew
+    ddaRoomLevel[20] = 1;
+    ddaDeathThreshold[20] = 12;
+    ddaTimeThreshold[20] = 120;
+
+    // Room 21: Brass Sent Us Under The Top
+    ddaRoomLevel[21] = 1;
+    ddaDeathThreshold[21] = 13;
+    ddaTimeThreshold[21] = 130;
+
+    // Room 22: A Wrinkle in Time
+    ddaRoomLevel[22] = 1;
+    ddaDeathThreshold[22] = 14;
+    ddaTimeThreshold[22] = 140;
+
+    //===========================================
+    //LABORATORY (23-63): Level 2 DDA
+    //===========================================
+
+    // Room 23: Get Ready To Bounce
+    ddaRoomLevel[23] = 2;
+    ddaDeathThreshold[23] = 8;
+    ddaTimeThreshold[23] = 90;
+
+    // Room 24: It's Perfectly Safe
+    ddaRoomLevel[24] = 2;
+    ddaDeathThreshold[24] = 8;
+    ddaTimeThreshold[24] = 90;
+
+    // Room 25: Rascasse
+    ddaRoomLevel[25] = 2;
+    ddaDeathThreshold[25] = 9;
+    ddaTimeThreshold[25] = 95;
+
+    // Room 26: Keep Going
+    ddaRoomLevel[26] = 2;
+    ddaDeathThreshold[26] = 9;
+    ddaTimeThreshold[26] = 95;
+
+    // Room 27: Single-slit Experiment
+    ddaRoomLevel[27] = 2;
+    ddaDeathThreshold[27] = 10;
+    ddaTimeThreshold[27] = 100;
+
+    // Room 28: Don't Flip Out
+    ddaRoomLevel[28] = 2;
+    ddaDeathThreshold[28] = 10;
+    ddaTimeThreshold[28] = 100;
+
+    // Room 29: Shuffled Hallway
+    ddaRoomLevel[29] = 2;
+    ddaDeathThreshold[29] = 10;
+    ddaTimeThreshold[29] = 100;
+
+    // Room 30: Double-Slit Experiment
+    ddaRoomLevel[30] = 2;
+    ddaDeathThreshold[30] = 11;
+    ddaTimeThreshold[30] = 105;
+
+    // Room 31: They Call Him Flipper
+    ddaRoomLevel[31] = 2;
+    ddaDeathThreshold[31] = 11;
+    ddaTimeThreshold[31] = 105;
+
+    // Room 32: Three's a Crowd
+    ddaRoomLevel[32] = 2;
+    ddaDeathThreshold[32] = 11;
+    ddaTimeThreshold[32] = 110;
+
+    // Room 33: Hitting the Apex
+    ddaRoomLevel[33] = 2;
+    ddaDeathThreshold[33] = 12;
+    ddaTimeThreshold[33] = 110;
+
+    // Room 34: Square Root
+    ddaRoomLevel[34] = 2;
+    ddaDeathThreshold[34] = 12;
+    ddaTimeThreshold[34] = 115;
+
+    // Room 35: Thorny Exchange
+    ddaRoomLevel[35] = 2;
+    ddaDeathThreshold[35] = 12;
+    ddaTimeThreshold[35] = 115;
+
+    // Room 36: Brought to you by the letter G
+    ddaRoomLevel[36] = 2;
+    ddaDeathThreshold[36] = 13;
+    ddaTimeThreshold[36] = 120;
+
+    // Room 37: Free Your Mind
+    ddaRoomLevel[37] = 2;
+    ddaDeathThreshold[37] = 13;
+    ddaTimeThreshold[37] = 120;
+
+    // Room 38: I changed my mind, Thelma...
+    ddaRoomLevel[38] = 2;
+    ddaDeathThreshold[38] = 13;
+    ddaTimeThreshold[38] = 125;
+
+    // Room 39: Indirect Jump Vector
+    ddaRoomLevel[39] = 2;
+    ddaDeathThreshold[39] = 14;
+    ddaTimeThreshold[39] = 125;
+
+    // Room 40: In a Single Bound
+    ddaRoomLevel[40] = 2;
+    ddaDeathThreshold[40] = 14;
+    ddaTimeThreshold[40] = 130;
+
+    // Room 41: Safety Dance
+    ddaRoomLevel[41] = 2;
+    ddaDeathThreshold[41] = 14;
+    ddaTimeThreshold[41] = 130;
+
+    // Room 42: Barani, Barani
+    ddaRoomLevel[42] = 2;
+    ddaDeathThreshold[42] = 15;
+    ddaTimeThreshold[42] = 135;
+
+    // Room 43: Exhausted?
+    ddaRoomLevel[43] = 2;
+    ddaDeathThreshold[43] = 15;
+    ddaTimeThreshold[43] = 135;
+
+    // Room 44: Heady Heights
+    ddaRoomLevel[44] = 2;
+    ddaDeathThreshold[44] = 15;
+    ddaTimeThreshold[44] = 140;
+
+    // Room 45: Entanglement Generator
+    ddaRoomLevel[45] = 2;
+    ddaDeathThreshold[45] = 16;
+    ddaTimeThreshold[45] = 140;
+
+    // Room 46: Here We Go Again
+    ddaRoomLevel[46] = 2;
+    ddaDeathThreshold[46] = 16;
+    ddaTimeThreshold[46] = 145;
+
+    // Room 47: The Bernoulli Principle
+    ddaRoomLevel[47] = 2;
+    ddaDeathThreshold[47] = 16;
+    ddaTimeThreshold[47] = 145;
+
+    // Room 48: Standing Wave
+    ddaRoomLevel[48] = 2;
+    ddaDeathThreshold[48] = 17;
+    ddaTimeThreshold[48] = 150;
+
+    // Room 49: Topsy Turvyism
+    ddaRoomLevel[49] = 2;
+    ddaDeathThreshold[49] = 17;
+    ddaTimeThreshold[49] = 150;
+
+    // Room 50: Spike Strip Deployed
+    ddaRoomLevel[50] = 2;
+    ddaDeathThreshold[50] = 17;
+    ddaTimeThreshold[50] = 155;
+
+    // Room 51: Vibrating String Problem
+    ddaRoomLevel[51] = 2;
+    ddaDeathThreshold[51] = 18;
+    ddaTimeThreshold[51] = 155;
+
+    // Room 52: Merge
+    ddaRoomLevel[52] = 2;
+    ddaDeathThreshold[52] = 18;
+    ddaTimeThreshold[52] = 160;
+
+    // Room 53: Kids His Age Bounce
+    ddaRoomLevel[53] = 2;
+    ddaDeathThreshold[53] = 18;
+    ddaTimeThreshold[53] = 160;
+
+    // Room 54: I'm Sorry
+    ddaRoomLevel[54] = 2;
+    ddaDeathThreshold[54] = 19;
+    ddaTimeThreshold[54] = 165;
+
+    // Room 55: Please Forgive Me!
+    ddaRoomLevel[55] = 2;
+    ddaDeathThreshold[55] = 19;
+    ddaTimeThreshold[55] = 165;
+
+    // Room 56: Playing Foosball
+    ddaRoomLevel[56] = 2;
+    ddaDeathThreshold[56] = 19;
+    ddaTimeThreshold[56] = 170;
+
+    // Room 57: A Difficult Chord
+    ddaRoomLevel[57] = 2;
+    ddaDeathThreshold[57] = 20;
+    ddaTimeThreshold[57] = 170;
+
+    // Room 58: The Living Dead End
+    ddaRoomLevel[58] = 2;
+    ddaDeathThreshold[58] = 20;
+    ddaTimeThreshold[58] = 175;
+
+    // Room 59: AAAAAA (last challenging room)
+    ddaRoomLevel[59] = 2;
+    ddaDeathThreshold[59] = 20;
+    ddaTimeThreshold[59] = 180;
+
+    //Lab end: Don't need DDA
+
+    // Room 60: Diode
+    ddaRoomHasDDA[60] = false;
+    ddaRoomLevel[60] = 0;
+
+    // Room 61: I Smell Ozone
+    ddaRoomHasDDA[61] = false;
+    ddaRoomLevel[61] = 0;
+
+    // Room 62: Why So Blue?
+    ddaRoomHasDDA[62] = false;
+    ddaRoomLevel[62] = 0;
+
+    //Room 63: Philadelphia Experiment
+    ddaRoomHasDDA[63] = false;
+    ddaRoomLevel[63] = 0;
+
+    ddaReset();
+}
+
+void Game::ddaReset()
+{
+    ddaDifficulty = 4;  //Start at middle difficulty
+    ddaCurrentRoom = 0;
+    ddaFurthestRoomReached = 0;
+    ddaDeathsInRoom = 0;
+    ddaRoomStartTime = 0;
+    ddaStruggledLastRoom = false;
+    ddaStruggledThisRoom = false;
+    ddaDeathRecordCount = 0;
+
+    //Clear death records
+    for (int i = 0; i < DDA_MAX_DEATH_RECORDS; i++)
+    {
+        ddaDeathRecords[i].x = 0;
+        ddaDeathRecords[i].y = 0;
+        ddaDeathRecords[i].room = 0;
+        ddaDeathRecords[i].deathNumber = 0;
+        ddaDeathRecords[i].timestamp = 0;
+    }
+
+    //Note: Don't reset checkpoint arrays here if you want 
+    //      checkpoints to persist across deaths. Reset them in ddaInit() only.
+}
+
+void Game::ddaOnPlayerDeath()
+{
+    //Don't process if DDA system is disabled
+    if (!ddaEnabled)
+    {
+        return;
+    }
+    
+    //Don't process if DDA is disabled for this room
+    if (!ddaRoomHasDDA[ddaCurrentRoom])
+    {
+        return;
+    }
+
+    ddaDeathsInRoom++;
+
+    //Record this death location
+    if (ddaDeathRecordCount < DDA_MAX_DEATH_RECORDS)
+    {
+        ddaDeathRecords[ddaDeathRecordCount].x = roomx;
+        ddaDeathRecords[ddaDeathRecordCount].y = roomy;
+        ddaDeathRecords[ddaDeathRecordCount].room = ddaCurrentRoom;
+        ddaDeathRecords[ddaDeathRecordCount].deathNumber = ddaDeathsInRoom;
+        ddaDeathRecords[ddaDeathRecordCount].timestamp = ddaGetTotalGameSeconds();
+        ddaDeathRecordCount++;
+    }
+    else
+    {
+        //Shift records left (remove oldest) and add new one at end
+        for (int i = 0; i < DDA_MAX_DEATH_RECORDS - 1; i++)
+        {
+            ddaDeathRecords[i] = ddaDeathRecords[i + 1];
+        }
+        ddaDeathRecords[DDA_MAX_DEATH_RECORDS - 1].x = roomx;
+        ddaDeathRecords[DDA_MAX_DEATH_RECORDS - 1].y = roomy;
+        ddaDeathRecords[DDA_MAX_DEATH_RECORDS - 1].room = ddaCurrentRoom;
+        ddaDeathRecords[DDA_MAX_DEATH_RECORDS - 1].deathNumber = ddaDeathsInRoom;
+        ddaDeathRecords[DDA_MAX_DEATH_RECORDS - 1].timestamp = ddaGetTotalGameSeconds();
+    }
+
+    //Check if now struggling
+    ddaStruggledThisRoom = ddaIsStrugglingInRoom();
+
+    //If struggling and haven't reached next room, spawn checkpoints there
+    if (ddaStruggledThisRoom && ddaCurrentRoom + 1 < DDA_MAX_ROOMS)
+    {
+        int nextRoom = ddaCurrentRoom + 1;
+
+        //Only spawn if player hasn't reached that room yet
+        if (nextRoom > ddaFurthestRoomReached)
+        {
+            ddaAddCheckpointsForRoom(nextRoom);
+        }
+    }
+}
+
+bool Game::ddaIsStrugglingInRoom()
+{
+    if (!ddaRoomHasDDA[ddaCurrentRoom])
+    {
+        return false;
+    }
+
+    //Check death threshold
+    if (ddaDeathsInRoom >= ddaDeathThreshold[ddaCurrentRoom])
+    {
+        return true;
+    }
+
+    //Check time threshold
+    int timeInRoom = ddaGetTotalGameSeconds() - ddaRoomStartTime;
+    if (timeInRoom >= ddaTimeThreshold[ddaCurrentRoom])
+    {
+        return true;
+    }
+
+    //Check for repeated deaths in same location (3+ deaths in same spot)
+    int sameLocationDeaths = 0;
+    for (int i = 0; i < ddaDeathRecordCount; i++)
+    {
+        if (ddaDeathRecords[i].room == ddaCurrentRoom &&
+            ddaDeathRecords[i].x == roomx &&
+            ddaDeathRecords[i].y == roomy)
+        {
+            sameLocationDeaths++;
+        }
+    }
+    if (sameLocationDeaths >= 3)
+    {
+        return true;
+    }
+
+    return false;
+}
+
+void Game::ddaOnRoomEnter(int room)
+{
+    //Bounds check
+    if (room < 0 || room >= DDA_MAX_ROOMS)
+    {
+        return;
+    }
+
+    //Update furthest room reached
+    if (room > ddaFurthestRoomReached)
+    {
+        ddaFurthestRoomReached = room;
+    }
+
+    //If entering a new room (not returning to previous)
+    if (room != ddaCurrentRoom)
+    {
+        //Complete the previous room first (only if moving forward)
+        if (room > ddaCurrentRoom)
+        {
+            ddaOnRoomComplete(ddaCurrentRoom);
+        }
+
+        ddaCurrentRoom = room;
+        ddaDeathsInRoom = 0;
+        ddaRoomStartTime = ddaGetTotalGameSeconds();
+        ddaStruggledThisRoom = false;
+
+        //Clear death records for new room
+        ddaDeathRecordCount = 0;
+    }
+}
+
+void Game::ddaOnRoomComplete(int room)
+{
+    //Don't adjust if DDA disabled for this room
+    if (!ddaRoomHasDDA[room])
+    {
+        ddaStruggledLastRoom = false;
+        return;
+    }
+
+    //Evaluate difficulty adjustment
+    ddaEvaluateAndAdjust();
+
+    //Update struggle tracking for next room
+    ddaStruggledLastRoom = ddaStruggledThisRoom;
+}
+
+void Game::ddaEvaluateAndAdjust()
+{
+    if (ddaStruggledThisRoom)
+    {
+        //Player struggled this room
+        if (ddaStruggledLastRoom)
+        {
+            //Struggled twice in a row -> decrease difficulty
+            if (ddaDifficulty > 1)
+            {
+                ddaDifficulty--;
+            }
+        }
+        //If only struggled once, don't change (give player time to adapt)
+    }
+    else
+    {
+        //Player succeeded (didn't struggle)
+        if (!ddaStruggledLastRoom)
+        {
+            //Succeeded twice in a row -> increase difficulty
+            if (ddaDifficulty < 7)
+            {
+                ddaDifficulty++;
+            }
+        }
+        //If struggled last time but succeeded now, don't change, they're learning so let them
+    }
+}
+
+void Game::ddaAddCheckpointsForRoom(int room)
+{
+    //Bounds and DDA check
+    if (room < 0 || room >= DDA_MAX_ROOMS || !ddaRoomHasDDA[room])
+    {
+        return;
+    }
+
+    int level = ddaRoomLevel[room];
+    int checkpointsToAdd = 0;
+
+    if (level == 1)
+    {
+        //Space Station (rooms 9-22)
+        //Difficulty 1-4: 1 checkpoint, Difficulty 5-7: 0
+        if (ddaDifficulty <= 4)
+        {
+            checkpointsToAdd = 1;
+        }
+    }
+    else if (level == 2)
+    {
+        //Laboratory (rooms 23-63)
+        //Difficulty 1-3: 2, Difficulty 4-5: 1, Difficulty 6-7: 0
+        if (ddaDifficulty <= 3)
+        {
+            checkpointsToAdd = 2;
+        }
+        else if (ddaDifficulty <= 5)
+        {
+            checkpointsToAdd = 1;
+        }
+    }
+
+    //Apply checkpoint spawning (can only add, never remove already spawned)
+    if (checkpointsToAdd >= 1 && !ddaAddCheckpoint1[room])
+    {
+        ddaAddCheckpoint1[room] = true;
+    }
+    if (checkpointsToAdd >= 2 && !ddaAddCheckpoint2[room])
+    {
+        ddaAddCheckpoint2[room] = true;
+    }
+}
+
+int Game::ddaGetRoomIndex(const std::string& name)
+{
+    //=====================================
+    //SPACE STATION - Tutorial Rooms (0-9)
+    //=====================================
+    if (name == "Welcome Aboard") return 0;
+    if (name == "Conundrum") return 1;
+    if (name == "Solitude") return 2;
+    if (name == "Leap of Faith") return 3;
+    if (name == "Traffic Jam") return 4;
+    if (name == "Atmospheric Filtering Unit") return 5;
+    if (name == "Linear Collider") return 6;
+    if (name == "Security Sweep") return 7;
+    if (name == "Comms Relay") return 8;
+    if (name == "Gantry and Dolly") return 9;
+
+    //=====================================
+    //SPACE STATION - Post-tutorial (10-22)
+    //=====================================
+    if (name == "The Yes Men") return 10;
+    if (name == "Stop and Reflect") return 11;
+    if (name == "V Stitch") return 12;
+    if (name == "B-B-B-Busted") return 13;
+    if (name == "The Sensible Room") return 14;
+    if (name == "Boo! Think Fast!") return 15;
+    if (name == "Driller") return 16;
+    if (name == "Exhaust Chute") return 17;
+    if (name == "Sorrow") return 18;
+    if (name == "Quicksand") return 19;
+    if (name == "The Tomb of Mad Carew") return 20;
+    if (name == "Brass Sent Us Under The Top") return 21;
+    if (name == "A Wrinkle in Time") return 22;
+
+    //=====================================
+    //LABORATORY (23-63)
+    //=====================================
+    if (name == "Get Ready To Bounce") return 23;
+    if (name == "It's Perfectly Safe") return 24;
+    if (name == "Rascasse") return 25;
+    if (name == "Keep Going") return 26;
+    if (name == "Single-slit Experiment") return 27;
+    if (name == "Don't Flip Out") return 28;
+    if (name == "Shuffled Hallway") return 29;
+    if (name == "Double-slit Experiment") return 30;
+    if (name == "They Call Him Flipper") return 31;
+    if (name == "Three's a Crowd") return 32;
+    if (name == "Hitting the Apex") return 33;
+    if (name == "Square Root") return 34;
+    if (name == "Thorny Exchange") return 35;
+    if (name == "Brought to you by the letter G") return 36;
+    if (name == "Free Your Mind") return 37;
+    if (name == "I Changed My Mind, Thelma...") return 38;
+    if (name == "Indirect Jump Vector") return 39;
+    if (name == "In a Single Bound") return 40;
+    if (name == "Safety Dance") return 41;
+    if (name == "Barani, Barani") return 42;
+    if (name == "Exhausted?") return 43;
+    if (name == "Heady Heights") return 44;
+    if (name == "Entanglement Generator") return 45;
+    if (name == "Here We Go Again") return 46;
+    if (name == "The Bernoulli Principle") return 47;
+    if (name == "Standing Wave") return 48;
+    if (name == "Topsy Turvyism") return 49;
+    if (name == "Spike Strip Deployed") return 50;
+    if (name == "Vibrating String Problem") return 51;
+    if (name == "Merge") return 52;
+    if (name == "Kids His Age Bounce") return 53;
+    if (name == "I'm Sorry") return 54;
+    if (name == "Please Forgive Me!") return 55;
+    if (name == "Playing Foosball") return 56;
+    if (name == "A Difficult Chord") return 57;
+    if (name == "The Living Dead End") return 58;
+    if (name == "AAAAAA") return 59;
+    if (name == "Diode") return 60;
+    if (name == "I Smell Ozone") return 61;
+    if (name == "Why So Blue?") return 62;
+    if (name == "Philadelphia Experiment") return 63;
+
+    return ddaCurrentRoom;  //Default: stay in current room
 }

@@ -187,9 +187,66 @@ class Game
 
 public:
     
-    //DDA RESEARCH: bool to stop research
+    //DDA RESEARCH: The DDA system
+    
+    //bool to stop research after completing Lab
     bool stopResearchGame = false;
     
+    //DDA Death Location Storage
+    struct DDADeathRecord {
+        int x;
+        int y;
+        int room;                             //Room where player died
+        int deathNumber;                      //Which death this was (1st, 2nd, etc.)
+        int timestamp;                        //Game time in seconds when death occurred
+    };
+
+    //DDA System Variables
+    
+    bool ddaEnabled;                          // Enable/disable entire DDA system
+
+    //Core difficulty
+    int ddaDifficulty;                        //1-7, starts at 4
+    int ddaCurrentRoom;                       //Current room player is in (0-63)
+    int ddaFurthestRoomReached;               //Furthest room player has entered
+
+    //Room tracking
+    int ddaDeathsInRoom;                      //Deaths in current room
+    int ddaRoomStartTime;                     //Timestamp when room was entered (in total seconds)
+    bool ddaStruggledLastRoom;                //Did player struggle in previous room?
+    bool ddaStruggledThisRoom;                //Is player currently struggling?
+
+    //Death location tracking (store last 10 deaths)
+    static const int DDA_MAX_DEATH_RECORDS = 10;
+    DDADeathRecord ddaDeathRecords[DDA_MAX_DEATH_RECORDS];
+    int ddaDeathRecordCount;                     // How many records currently stored
+
+    //Checkpoint spawning
+    //Index corresponds to room number, true = extra checkpoint spawned
+    static const int DDA_MAX_ROOMS = 64;
+    bool ddaAddCheckpoint1[DDA_MAX_ROOMS];  // First checkpoint in room
+    bool ddaAddCheckpoint2[DDA_MAX_ROOMS];  // Second checkpoint in room (if there is one)
+
+    //Rooms configuration (set these up during initialization)
+    int ddaDeathThreshold[DDA_MAX_ROOMS];     // Deaths before considered "struggling"
+    int ddaTimeThreshold[DDA_MAX_ROOMS];      // Seconds before considered "struggling"
+    bool ddaRoomHasDDA[DDA_MAX_ROOMS];        // false for tutorial rooms and final rooms
+    int ddaRoomLevel[DDA_MAX_ROOMS];          // 0 = tutorial/final, 1 = Space Station, 2 = Laboratory
+
+    //DDA System Functions
+    void ddaInit();                              // Initialize DDA system
+    void ddaReset();                             // Reset for new game
+    void ddaOnPlayerDeath();                     // Called when player dies
+    void ddaOnRoomEnter(int room);         // Called when entering new room
+    void ddaOnRoomComplete(int room);      // Called when completing a room
+    void ddaEvaluateAndAdjust();                 // Evaluate struggle and adjust difficulty
+    void ddaAddCheckpointsForRoom(int room);  // Determine checkpoints for a room
+    bool ddaIsStrugglingInRoom();             // Check if player is currently struggling
+    int ddaGetTotalGameSeconds();                // Get current game time in seconds
+    int ddaGetRoomIndex(const std::string& name); // Map room name to index (0-63)
+    //DDA RESEARCH - STOP
+
+
     void init(void);
     void setdefaultcontrollerbuttons(void);
 

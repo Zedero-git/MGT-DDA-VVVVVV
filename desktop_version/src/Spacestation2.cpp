@@ -3420,7 +3420,8 @@ const short* spacestation2class::loadlevel(int rx, int ry)
 
         obj.createentity(192, 48, 10, 0, 439520);  // (savepoint)
         //obj.createentity(112, 160, 10, 1, 439521);  // (savepoint)
-        //DDA RESEARCH: Removed one checkpoint
+        
+        //DDA RESEARCH: Removed second checkpoint, since the trinket room was also removed, there's no real point in having 2 checkpoints
         roomname = "Atmospheric Filtering Unit";
         result = contents;
         break;

@@ -3456,6 +3456,9 @@ void scriptclass::hardreset(void)
     obj.customactivitycolour = "";
     obj.customactivitytext = "";
     obj.customactivitypositiony = -1;
+
+    //DDA RESEARCH: Initialize DDA system
+    game.ddaInit();
 }
 
 bool scriptclass::loadcustom(const std::string& t)

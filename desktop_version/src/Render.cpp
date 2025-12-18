@@ -2996,7 +2996,7 @@ static void rendermapcursor(const bool flashing)
 void maprender(void)
 {
     //DDA RESEARCH: disable quicksaving with bool
-    bool quicksaveEnabled = false;
+    bool enableQuicksaving = true;
     
     graphics.set_render_target(graphics.menuTexture);
     graphics.clear();
@@ -3346,7 +3346,7 @@ void maprender(void)
         {
             char buffer[SCREEN_WIDTH_CHARS + 1];
             
-            if (quicksaveEnabled) //DDA RESEARCH: disable quicksave
+            if (enableQuicksaving) //DDA RESEARCH: disable quicksave
             {
                 vformat_buf(
                     buffer, sizeof(buffer),
@@ -3363,7 +3363,7 @@ void maprender(void)
                 break;
             }
 
-            if (quicksaveEnabled) //DDA RESEARCH: disable quicksave
+            if (enableQuicksaving) //DDA RESEARCH: disable quicksave
             {
                 font::print(PR_CEN, -1, FLIP(100, 8), loc::gettext("Last Save:"), 164 - help.glow/4, 164 - help.glow/4, 164);
             }
@@ -3374,7 +3374,7 @@ void maprender(void)
 
             struct Game::Summary* last = &game.last_quicksave;
             
-            if (quicksaveEnabled) //DDA RESEARCH: disable quicksave
+            if (enableQuicksaving) //DDA RESEARCH: disable quicksave
             {
                 vformat_buf(
                     buffer, sizeof(buffer),

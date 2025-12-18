@@ -3310,20 +3310,23 @@ static void mapmenuactionpress(const bool version2_2)
         game.savetrinkets = game.trinkets();
 
         //DDA RESEARCH: Disable creating new quicksaves
-        /*
-        bool success;
+        
+        bool enableQuicksaving = true;
+        if (enableQuicksaving)
+        {
+            bool success;
 
-        if(map.custommodeforreal)
-        {
-            success = game.customsavequick(cl.ListOfMetaData[game.playcustomlevel].filename);
+            if(map.custommodeforreal)
+            {
+                success = game.customsavequick(cl.ListOfMetaData[game.playcustomlevel].filename);
+            }
+            else
+            {
+                success = game.savequick();
+            }
+            game.gamesaved = success;
+            game.gamesavefailed = !success;
         }
-        else
-        {
-            success = game.savequick();
-        }
-        game.gamesaved = success;
-        game.gamesavefailed = !success;
-        */
     }
         break;
 

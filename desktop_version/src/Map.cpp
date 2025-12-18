@@ -192,6 +192,12 @@ void mapclass::setroomname(const char* name)
             roomname = roomname_heap;
         }
     }
+    //DDA RESEARCH: Retrieve roomname
+    int newRoom = game.ddaGetRoomIndex(roomname);
+    if (newRoom != game.ddaCurrentRoom)
+    {
+        game.ddaOnRoomEnter(newRoom);
+    }
 }
 
 void mapclass::resetmap(void)
