@@ -2258,7 +2258,7 @@ const short* labclass::loadlevel(int rx, int ry)
         
         //DDA RESEARCH
         //Endpoint of research game!!
-        //If player interacts with this teleporter, game should go to an end screen
+        //If player interacts with this teleporter, game quits
 
         if(game.intimetrial)
         {

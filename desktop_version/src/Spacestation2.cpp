@@ -3143,8 +3143,22 @@ const short* spacestation2class::loadlevel(int rx, int ry)
         obj.createentity(192+2, 176-4, 1, 1, 3);  // Enemy
         obj.createentity(192+2, 40, 1, 0, 3);  // Enemy
 
-        obj.createentity(64, 80, 10, 1, 441501);  // (savepoint)
-        obj.createentity(64, 136, 10, 0, 441502);  // (savepoint)
+        if (!game.ddaEnabled)
+        {
+            // CONTROL GROUP
+            obj.createentity(64, 80, 10, 1, 441501);  // (savepoint)
+            obj.createentity(64, 136, 10, 0, 441502);  // (savepoint)
+        }
+        else
+        {
+            // EXPERIMENT GROUP:
+            if (game.ddaAddCheckpoint1[10])
+            {
+                obj.createentity(64, 80, 10, 1, 441501); // (savepoint)
+            }
+            obj.createentity(64, 136, 10, 0, 441502); // (savepoint)
+        }
+
 
         roomname = "The Yes Men";
         result = contents;

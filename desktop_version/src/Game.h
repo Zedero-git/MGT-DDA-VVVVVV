@@ -229,7 +229,9 @@ public:
 
     //Rooms configuration (set these up during initialization)
     int ddaDeathThreshold[DDA_MAX_ROOMS];     // Deaths before considered "struggling"
-    int ddaTimeThreshold[DDA_MAX_ROOMS];      // Seconds before considered "struggling"
+    int ddaShortTimeThreshold[DDA_MAX_ROOMS];      // Seconds before considered "struggling lightly"
+    int ddaLongTimeThreshold[DDA_MAX_ROOMS];      // Seconds before considered "struggling heavily"
+
     bool ddaRoomHasDDA[DDA_MAX_ROOMS];        // false for tutorial rooms and final rooms
     int ddaRoomLevel[DDA_MAX_ROOMS];          // 0 = tutorial/final, 1 = Space Station, 2 = Laboratory
 
@@ -246,6 +248,43 @@ public:
     int ddaGetRoomIndex(const std::string& name); // Map room name to index (0-63)
     //DDA RESEARCH - STOP
 
+
+    //DDA RESEARCH: Telemetry
+    struct TelemetryRoomData {
+        int timeSpentSeconds;                    //Total time spent in this room
+        int difficultyOnEntry;                   //Difficulty level when first entering
+        int totalDeaths;                         //Total deaths in this room
+        DDADeathRecord deaths[100];              //Reuse DDADeathRecord, with up to 100 deaths per room
+        int deathCount;                          //Actual number of deaths recorded
+        bool visited;                            //Has player visited this room?
+    };
+
+    //Telemetry variables
+    TelemetryRoomData telemetryRooms[DDA_MAX_ROOMS];  //Data for each of 64 rooms
+    int telemetryCheckpointsActivated;                //Count of unique checkpoint activations
+
+    //Tracking up to 200 checkpoints total using a simple list
+    int telemetryActivatedCheckpointIDs[200];       //Store the checkpoint ID values
+    int telemetryActivatedCheckpointCount;            //How many unique checkpoints activated
+    int telemetryTotalKeyPresses;                     //Total key presses during gameplay
+    int telemetryGameStartSeconds;                    //When gameplay started (for key presses per minute, aka KPM, calculation)
+
+    //Key state tracking for detecting key-down events
+    bool telemetryKeyWasDown_left;
+    bool telemetryKeyWasDown_right;
+    bool telemetryKeyWasDown_action;
+
+    //Telemetry functions
+    void telemetryInit();                             //Initialize telemetry system
+    void telemetryOnRoomEnter(int room);              //Called when entering a room (first time only records difficulty)
+    void telemetryOnRoomExit(int room);               //Called when leaving a room (records time spent)
+    void telemetryOnDeath(int room, int x, int y);    //Called on each death
+    void telemetryOnCheckpointActivated(int checkpointID);  //Called when checkpoint is activated
+    void telemetryOnKeyPress();                       //Called on each key press (up->down transition)
+    void telemetryUpdateKeyTracking();                //Called each frame to detect key presses
+    void telemetryWriteLog();                         //Write all data to file
+    std::string telemetryGetRoomName(int index);      //Get room name from index
+    //DDA RESEARCH: End of telemetry
 
     void init(void);
     void setdefaultcontrollerbuttons(void);
