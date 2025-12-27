@@ -976,6 +976,12 @@ static enum LoopCode loop_begin(void)
     if (game.inputdelay)
     {
         key.Poll();
+        
+        //TELEMETRY: track key inputs
+        if (game.gamestate == GAMEMODE)
+        {
+            game.telemetryUpdateKeyTracking();
+        }
     }
 
     // Update network per frame.

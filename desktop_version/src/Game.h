@@ -248,6 +248,7 @@ public:
     int ddaGetRoomIndex(const std::string& name); // Map room name to index (0-63)
     //DDA RESEARCH - STOP
 
+    //=======================================================================
 
     //DDA RESEARCH: Telemetry
     struct TelemetryRoomData {
@@ -284,6 +285,13 @@ public:
     void telemetryUpdateKeyTracking();                //Called each frame to detect key presses
     void telemetryWriteLog();                         //Write all data to file
     std::string telemetryGetRoomName(int index);      //Get room name from index
+
+    //Platform-specific telemetry export
+    void telemetryWriteLocalFile(int totalGameSeconds, float kpm);  //Desktop: write to file
+    #ifdef __EMSCRIPTEN__
+    void telemetrySendToGoogleSheets(int totalGameSeconds, float kpm);  //Web: send to Google Sheets
+    #endif
+
     //DDA RESEARCH: End of telemetry
 
     void init(void);

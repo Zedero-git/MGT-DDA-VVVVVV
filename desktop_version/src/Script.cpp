@@ -3457,8 +3457,9 @@ void scriptclass::hardreset(void)
     obj.customactivitytext = "";
     obj.customactivitypositiony = -1;
 
-    //DDA RESEARCH: Initialize DDA system
+    //DDA RESEARCH: Initialize DDA system and telemetry
     game.ddaInit();
+    game.telemetryInit();
 }
 
 bool scriptclass::loadcustom(const std::string& t)

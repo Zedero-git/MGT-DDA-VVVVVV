@@ -2753,6 +2753,9 @@ bool entityclass::updateentities( int i )
                 game.savepoint = entities[i].para;
                 music.playef(Sound_CHECKPOINT);
 
+                //TELEMETRY: Track first-time checkpoint activation
+                game.telemetryOnCheckpointActivated(entities[i].para);
+
                 game.savex = entities[i].xp - 4;
 
                 if (entities[i].tile == 20)

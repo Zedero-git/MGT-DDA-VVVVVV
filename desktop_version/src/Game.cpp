@@ -9,6 +9,9 @@
 //DDA RESEARCH: For timestamp and file writing
 #include <ctime>
 #include <cstdio>
+#ifdef __EMSCRIPTEN__
+#include <emscripten/fetch.h>
+#endif
 
 #include "ButtonGlyphs.h"
 #include "Constants.h"
@@ -2904,8 +2907,8 @@ void Game::updatestate(void)
             }
             break;
         case 3045:
-            //DDA RESEARCH: Changes to quit game after lab
-            //After 2 have been rescued, quit game
+            //DDA RESEARCH: Changes to quit the game after lab
+            //After 2 have been rescued, stop game
             if (stopResearchGame)
             {
                 graphics.fademode = FADE_START_FADEOUT;
@@ -7743,7 +7746,7 @@ void Game::quittomenu(void)
     //or "do you want cutscenes?"
     //or the confirm-load-quicksave menu
 
-    //DDA RESEARCH: Telemetry data
+    //TELEMETRY: record, write and export
     telemetryOnRoomExit(ddaCurrentRoom);  //Record time for final room
     telemetryWriteLog();                  //Write all data to file
     vlog_info("DDA RESEARCH: Telemetry export complete");
@@ -8108,85 +8111,85 @@ void Game::ddaInit()
     //SPACE STATION - Post-tutorial (9-22): Phase 1 DDA
     //===========================================
 
-    // Room 9: Gantry and Dolly
+    //Room 9: Gantry and Dolly
     ddaRoomLevel[9] = 1;
     ddaDeathThreshold[9] = 1;
     ddaShortTimeThreshold[9] = 30;
     ddaLongTimeThreshold[9] = 90;
 
-    // Room 10: The Yes Men
+    //Room 10: The Yes Men
     ddaRoomLevel[10] = 1;
     ddaDeathThreshold[10] = 6;
     ddaShortTimeThreshold[10] = 30;
     ddaLongTimeThreshold[10] = 90;
 
-    // Room 11: Stop and Reflect
+    //Room 11: Stop and Reflect
     ddaRoomLevel[11] = 1;
     ddaDeathThreshold[11] = 7;
     ddaShortTimeThreshold[11] = 30;
     ddaLongTimeThreshold[11] = 90;
 
-    // Room 12: V Stitch
+    //Room 12: V Stitch
     ddaRoomLevel[12] = 1;
     ddaDeathThreshold[12] = 8;
     ddaShortTimeThreshold[12] = 30;
     ddaLongTimeThreshold[12] = 90;
 
-    // Room 13: B-B-B-Busted
+    //Room 13: B-B-B-Busted
     ddaRoomLevel[13] = 1;
     ddaDeathThreshold[13] = 8;
     ddaShortTimeThreshold[13] = 30;
     ddaLongTimeThreshold[13] = 90;
 
-    // Room 14: The Sensible Room
+    //Room 14: The Sensible Room
     ddaRoomLevel[14] = 1;
     ddaDeathThreshold[14] = 9;
     ddaShortTimeThreshold[14] = 30;
     ddaLongTimeThreshold[14] = 90;
 
-    // Room 15: Boo! Think Fast!
+    //Room 15: Boo! Think Fast!
     ddaRoomLevel[15] = 1;
     ddaDeathThreshold[15] = 10;
     ddaShortTimeThreshold[15] = 30;
     ddaLongTimeThreshold[15] = 90;
 
-    // Room 16: Driller
+    //Room 16: Driller
     ddaRoomLevel[16] = 1;
     ddaDeathThreshold[16] = 10;
     ddaShortTimeThreshold[16] = 30;
     ddaLongTimeThreshold[16] = 90;
 
-    // Room 17: Exhaust Chute
+    //Room 17: Exhaust Chute
     ddaRoomLevel[17] = 1;
     ddaDeathThreshold[17] = 10;
     ddaShortTimeThreshold[17] = 30;
     ddaLongTimeThreshold[17] = 90;
 
-    // Room 18: Sorrow
+    //Room 18: Sorrow
     ddaRoomLevel[18] = 1;
     ddaDeathThreshold[18] = 11;
     ddaShortTimeThreshold[18] = 30;
     ddaLongTimeThreshold[18] = 90;
 
-    // Room 19: Quicksand
+    //Room 19: Quicksand
     ddaRoomLevel[19] = 1;
     ddaDeathThreshold[19] = 12;
     ddaShortTimeThreshold[19] = 30;
     ddaLongTimeThreshold[19] = 90;
 
-    // Room 20: The Tomb of Mad Carew
+    //Room 20: The Tomb of Mad Carew
     ddaRoomLevel[20] = 1;
     ddaDeathThreshold[20] = 12;
     ddaShortTimeThreshold[20] = 30;
     ddaLongTimeThreshold[20] = 90;
 
-    // Room 21: Brass Sent Us Under The Top
+    //Room 21: Brass Sent Us Under The Top
     ddaRoomLevel[21] = 1;
     ddaDeathThreshold[21] = 13;
     ddaShortTimeThreshold[21] = 30;
     ddaLongTimeThreshold[21] = 90;
 
-    // Room 22: A Wrinkle in Time
+    //Room 22: A Wrinkle in Time
     ddaRoomLevel[22] = 1;
     ddaDeathThreshold[22] = 14;
     ddaShortTimeThreshold[22] = 30;
@@ -8196,223 +8199,223 @@ void Game::ddaInit()
     //LABORATORY (23-63): Level 2 DDA
     //===========================================
 
-    // Room 23: Get Ready To Bounce
+    //Room 23: Get Ready To Bounce
     ddaRoomLevel[23] = 2;
     ddaDeathThreshold[23] = 8;
     ddaShortTimeThreshold[23] = 30;
     ddaLongTimeThreshold[23] = 90;
 
-    // Room 24: It's Perfectly Safe
+    //Room 24: It's Perfectly Safe
     ddaRoomLevel[24] = 2;
     ddaDeathThreshold[24] = 8;
     ddaShortTimeThreshold[24] = 30;
     ddaLongTimeThreshold[24] = 90;
 
-    // Room 25: Rascasse
+    //Room 25: Rascasse
     ddaRoomLevel[25] = 2;
     ddaDeathThreshold[25] = 9;
     ddaShortTimeThreshold[25] = 30;
     ddaLongTimeThreshold[25] = 90;
 
-    // Room 26: Keep Going
+    //Room 26: Keep Going
     ddaRoomLevel[26] = 2;
     ddaDeathThreshold[26] = 9;
     ddaShortTimeThreshold[26] = 30;
     ddaLongTimeThreshold[26] = 90;
 
-    // Room 27: Single-slit Experiment
+    //Room 27: Single-slit Experiment
     ddaRoomLevel[27] = 2;
     ddaDeathThreshold[27] = 10;
     ddaShortTimeThreshold[27] = 30;
     ddaLongTimeThreshold[27] = 90;
 
-    // Room 28: Don't Flip Out
+    //Room 28: Don't Flip Out
     ddaRoomLevel[28] = 2;
     ddaDeathThreshold[28] = 10;
     ddaShortTimeThreshold[28] = 30;
     ddaLongTimeThreshold[28] = 90;
 
-    // Room 29: Shuffled Hallway
+    //Room 29: Shuffled Hallway
     ddaRoomLevel[29] = 2;
     ddaDeathThreshold[29] = 10;
     ddaShortTimeThreshold[29] = 30;
     ddaLongTimeThreshold[29] = 90;
 
-    // Room 30: Double-Slit Experiment
+    //Room 30: Double-Slit Experiment
     ddaRoomLevel[30] = 2;
     ddaDeathThreshold[30] = 11;
     ddaShortTimeThreshold[30] = 30;
     ddaLongTimeThreshold[30] = 90;
 
-    // Room 31: They Call Him Flipper
+    //Room 31: They Call Him Flipper
     ddaRoomLevel[31] = 2;
     ddaDeathThreshold[31] = 11;
     ddaShortTimeThreshold[31] = 30;
     ddaLongTimeThreshold[31] = 90;
 
-    // Room 32: Three's a Crowd
+    //Room 32: Three's a Crowd
     ddaRoomLevel[32] = 2;
     ddaDeathThreshold[32] = 11;
     ddaShortTimeThreshold[32] = 30;
     ddaLongTimeThreshold[32] = 90;
 
-    // Room 33: Hitting the Apex
+    //Room 33: Hitting the Apex
     ddaRoomLevel[33] = 2;
     ddaDeathThreshold[33] = 12;
     ddaShortTimeThreshold[33] = 30;
     ddaLongTimeThreshold[33] = 90;
 
-    // Room 34: Square Root
+    //Room 34: Square Root
     ddaRoomLevel[34] = 2;
     ddaDeathThreshold[34] = 12;
     ddaShortTimeThreshold[34] = 30;
     ddaLongTimeThreshold[34] = 90;
 
-    // Room 35: Thorny Exchange
+    //Room 35: Thorny Exchange
     ddaRoomLevel[35] = 2;
     ddaDeathThreshold[35] = 12;
     ddaShortTimeThreshold[35] = 30;
     ddaLongTimeThreshold[35] = 90;
 
-    // Room 36: Brought to you by the letter G
+    //Room 36: Brought to you by the letter G
     ddaRoomLevel[36] = 2;
     ddaDeathThreshold[36] = 13;
     ddaShortTimeThreshold[36] = 30;
     ddaLongTimeThreshold[36] = 90;
 
-    // Room 37: Free Your Mind
+    //Room 37: Free Your Mind
     ddaRoomLevel[37] = 2;
     ddaDeathThreshold[37] = 13;
     ddaShortTimeThreshold[37] = 30;
     ddaLongTimeThreshold[37] = 90;
 
-    // Room 38: I changed my mind, Thelma...
+    //Room 38: I changed my mind, Thelma...
     ddaRoomLevel[38] = 2;
     ddaDeathThreshold[38] = 13;
     ddaShortTimeThreshold[38] = 30;
     ddaLongTimeThreshold[38] = 90;
 
-    // Room 39: Indirect Jump Vector
+    //Room 39: Indirect Jump Vector
     ddaRoomLevel[39] = 2;
     ddaDeathThreshold[39] = 14;
     ddaShortTimeThreshold[39] = 30;
     ddaLongTimeThreshold[39] = 90;
 
-    // Room 40: In a Single Bound
+    //Room 40: In a Single Bound
     ddaRoomLevel[40] = 2;
     ddaDeathThreshold[40] = 14;
     ddaShortTimeThreshold[40] = 30;
     ddaLongTimeThreshold[40] = 90;
 
-    // Room 41: Safety Dance
+    //Room 41: Safety Dance
     ddaRoomLevel[41] = 2;
     ddaDeathThreshold[41] = 14;
     ddaShortTimeThreshold[41] = 30;
     ddaLongTimeThreshold[41] = 90;
 
-    // Room 42: Barani, Barani
+    //Room 42: Barani, Barani
     ddaRoomLevel[42] = 2;
     ddaDeathThreshold[42] = 15;
     ddaShortTimeThreshold[42] = 30;
     ddaLongTimeThreshold[42] = 90;
 
-    // Room 43: Exhausted?
+    //Room 43: Exhausted?
     ddaRoomLevel[43] = 2;
     ddaDeathThreshold[43] = 15;
     ddaShortTimeThreshold[43] = 30;
     ddaLongTimeThreshold[43] = 90;
 
-    // Room 44: Heady Heights
+    //Room 44: Heady Heights
     ddaRoomLevel[44] = 2;
     ddaDeathThreshold[44] = 15;
     ddaShortTimeThreshold[44] = 30;
     ddaLongTimeThreshold[44] = 90;
 
-    // Room 45: Entanglement Generator
+    //Room 45: Entanglement Generator
     ddaRoomLevel[45] = 2;
     ddaDeathThreshold[45] = 16;
     ddaShortTimeThreshold[45] = 30;
     ddaLongTimeThreshold[45] = 90;
 
-    // Room 46: Here We Go Again
+    //Room 46: Here We Go Again
     ddaRoomLevel[46] = 2;
     ddaDeathThreshold[46] = 16;
     ddaShortTimeThreshold[46] = 30;
     ddaLongTimeThreshold[46] = 90;
 
-    // Room 47: The Bernoulli Principle
+    //Room 47: The Bernoulli Principle
     ddaRoomLevel[47] = 2;
     ddaDeathThreshold[47] = 16;
     ddaShortTimeThreshold[47] = 30;
     ddaLongTimeThreshold[47] = 90;
 
-    // Room 48: Standing Wave
+    //Room 48: Standing Wave
     ddaRoomLevel[48] = 2;
     ddaDeathThreshold[48] = 17;
     ddaShortTimeThreshold[48] = 30;
     ddaLongTimeThreshold[48] = 90;
 
-    // Room 49: Topsy Turvyism
+    //Room 49: Topsy Turvyism
     ddaRoomLevel[49] = 2;
     ddaDeathThreshold[49] = 17;
     ddaShortTimeThreshold[49] = 30;
     ddaLongTimeThreshold[49] = 90;
 
-    // Room 50: Spike Strip Deployed
+    //Room 50: Spike Strip Deployed
     ddaRoomLevel[50] = 2;
     ddaDeathThreshold[50] = 17;
     ddaShortTimeThreshold[50] = 30;
     ddaLongTimeThreshold[50] = 90;
 
-    // Room 51: Vibrating String Problem
+    //Room 51: Vibrating String Problem
     ddaRoomLevel[51] = 2;
     ddaDeathThreshold[51] = 18;
     ddaShortTimeThreshold[51] = 30;
     ddaLongTimeThreshold[51] = 90;
 
-    // Room 52: Merge
+    //Room 52: Merge
     ddaRoomLevel[52] = 2;
     ddaDeathThreshold[52] = 18;
     ddaShortTimeThreshold[52] = 30;
     ddaLongTimeThreshold[52] = 90;
 
-    // Room 53: Kids His Age Bounce
+    //Room 53: Kids His Age Bounce
     ddaRoomLevel[53] = 2;
     ddaDeathThreshold[53] = 18;
     ddaShortTimeThreshold[53] = 30;
     ddaLongTimeThreshold[53] = 90;
 
-    // Room 54: I'm Sorry
+    //Room 54: I'm Sorry
     ddaRoomLevel[54] = 2;
     ddaDeathThreshold[54] = 19;
     ddaShortTimeThreshold[54] = 30;
     ddaLongTimeThreshold[54] = 90;
 
-    // Room 55: Please Forgive Me!
+    //Room 55: Please Forgive Me!
     ddaRoomLevel[55] = 2;
     ddaDeathThreshold[55] = 19;
     ddaShortTimeThreshold[55] = 30;
     ddaLongTimeThreshold[55] = 90;
 
-    // Room 56: Playing Foosball
+    //Room 56: Playing Foosball
     ddaRoomLevel[56] = 2;
     ddaDeathThreshold[56] = 19;
     ddaShortTimeThreshold[56] = 30;
     ddaLongTimeThreshold[56] = 90;
 
-    // Room 57: A Difficult Chord
+    //Room 57: A Difficult Chord
     ddaRoomLevel[57] = 2;
     ddaDeathThreshold[57] = 20;
     ddaShortTimeThreshold[57] = 30;
     ddaLongTimeThreshold[57] = 90;
 
-    // Room 58: The Living Dead End
+    //Room 58: The Living Dead End
     ddaRoomLevel[58] = 2;
     ddaDeathThreshold[58] = 20;
     ddaShortTimeThreshold[58] = 30;
     ddaLongTimeThreshold[58] = 90;
 
-    // Room 59: AAAAAA (last challenging room)
+    //Room 59: AAAAAA (last challenging room)
     ddaRoomLevel[59] = 2;
     ddaDeathThreshold[59] = 20;
     ddaShortTimeThreshold[59] = 30;
@@ -8420,15 +8423,15 @@ void Game::ddaInit()
 
     //Lab end: Don't need DDA
 
-    // Room 60: Diode
+    //Room 60: Diode
     ddaRoomHasDDA[60] = false;
     ddaRoomLevel[60] = 0;
 
-    // Room 61: I Smell Ozone
+    //Room 61: I Smell Ozone
     ddaRoomHasDDA[61] = false;
     ddaRoomLevel[61] = 0;
 
-    // Room 62: Why So Blue?
+    //Room 62: Why So Blue?
     ddaRoomHasDDA[62] = false;
     ddaRoomLevel[62] = 0;
 
@@ -8466,13 +8469,14 @@ void Game::ddaReset()
 
 void Game::ddaOnPlayerDeath()
 {
-    //Don't process if DDA system is disabled
+    //TELEMETRY: Always record deaths, even if DDA is disabled
+    telemetryOnDeath(ddaCurrentRoom, roomx, roomy);
+    
     if (!ddaEnabled)
     {
         return;
     }
     
-    //Don't process if DDA is disabled for this room
     if (!ddaRoomHasDDA[ddaCurrentRoom])
     {
         return;
@@ -8480,7 +8484,6 @@ void Game::ddaOnPlayerDeath()
 
     ddaDeathsInRoom++;
 
-    //Record this death location
     if (ddaDeathRecordCount < DDA_MAX_DEATH_RECORDS)
     {
         ddaDeathRecords[ddaDeathRecordCount].x = roomx;
@@ -8611,6 +8614,9 @@ void Game::ddaOnRoomEnter(int room)
         return;
     }
 
+    //TELEMETRY: Record first visit (records difficulty on entry)
+    telemetryOnRoomEnter(room);
+
     //Update furthest room reached
     if (room > ddaFurthestRoomReached)
     {
@@ -8620,6 +8626,9 @@ void Game::ddaOnRoomEnter(int room)
     //If entering a new room (not returning to previous)
     if (room != ddaCurrentRoom)
     {
+        //TELEMETRY: Record time spent in previous room before switching
+        telemetryOnRoomExit(ddaCurrentRoom);
+        
         //Complete the previous room first (only if moving forward)
         if (room > ddaCurrentRoom)
         {
@@ -8978,6 +8987,192 @@ std::string Game::telemetryGetRoomName(int index)
 
 void Game::telemetryWriteLog()
 {
+    //Calculate totals
+    int totalGameSeconds = ddaGetTotalGameSeconds();
+    float gameplayMinutes = (float)(totalGameSeconds - telemetryGameStartSeconds) / 60.0f;
+    float kpm = (gameplayMinutes > 0) ? (telemetryTotalKeyPresses / gameplayMinutes) : 0;
+
+#ifdef __EMSCRIPTEN__
+    telemetrySendToGoogleSheets(totalGameSeconds, kpm);
+#else
+    telemetryWriteLocalFile(totalGameSeconds, kpm);
+#endif
+}
+
+void Game::telemetryWriteLocalFile(int totalGameSeconds, float kpm)
+{
+    //Generate unique filename with timestamp
+    time_t now = time(NULL);
+    struct tm* t = localtime(&now);
+    char filename[128];
+    SDL_snprintf(filename, sizeof(filename),
+        "telemetry_%04d%02d%02d_%02d%02d%02d_%s.txt",
+        t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
+        t->tm_hour, t->tm_min, t->tm_sec,
+        ddaEnabled ? "DDA" : "CONTROL");
+
+    //Open file in root directory
+    char filepath[256];
+    SDL_snprintf(filepath, sizeof(filepath), "%s", filename);
+
+    FILE* f = fopen(filepath, "w");
+    if (!f)
+    {
+        vlog_error("TELEMETRY: Failed to open file: %s", filepath);
+        return;
+    }
+
+    int totalMinutes = totalGameSeconds / 60;
+    int totalSeconds = totalGameSeconds % 60;
+
+    //Write header
+    fprintf(f, "=== VVVVVV DDA RESEARCH TELEMETRY ===\n");
+    fprintf(f, "Group: %s\n", ddaEnabled ? "EXPERIMENT (DDA)" : "CONTROL (Fixed)");
+    fprintf(f, "Timestamp: %04d-%02d-%02d %02d:%02d:%02d\n\n",
+        t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
+        t->tm_hour, t->tm_min, t->tm_sec);
+
+    //Write summary
+    fprintf(f, "=== SUMMARY ===\n");
+    fprintf(f, "Total Deaths: %d\n", deathcounts);
+    fprintf(f, "Total Time: %d:%02d (minutes:seconds)\n", totalMinutes, totalSeconds);
+    fprintf(f, "Furthest Room Reached: %d (%s)\n",
+        ddaFurthestRoomReached, telemetryGetRoomName(ddaFurthestRoomReached).c_str());
+    fprintf(f, "Unique Checkpoints Activated: %d\n", telemetryCheckpointsActivated);
+    fprintf(f, "Total Key Presses: %d\n", telemetryTotalKeyPresses);
+    fprintf(f, "Key Presses Per Minute: %.2f\n\n", kpm);
+
+    //Write per-room data
+    fprintf(f, "=== PER-ROOM DATA ===\n\n");
+
+    for (int i = 0; i <= ddaFurthestRoomReached && i < DDA_MAX_ROOMS; i++)
+    {
+        if (!telemetryRooms[i].visited) continue;
+
+        TelemetryRoomData& room = telemetryRooms[i];
+        int roomMin = room.timeSpentSeconds / 60;
+        int roomSec = room.timeSpentSeconds % 60;
+
+        fprintf(f, "--- Room %d: %s ---\n", i, telemetryGetRoomName(i).c_str());
+        fprintf(f, "Time Spent: %d:%02d\n", roomMin, roomSec);
+
+        if (ddaEnabled)
+        {
+            fprintf(f, "Difficulty on Entry: %d\n", room.difficultyOnEntry);
+        }
+        fprintf(f, "Total Deaths: %d\n", room.totalDeaths);
+
+        if (room.deathCount > 0)
+        {
+            fprintf(f, "Death Details:\n");
+            for (int d = 0; d < room.deathCount; d++)
+            {
+                DDADeathRecord& death = room.deaths[d];
+                int deathMin = death.timestamp / 60;
+                int deathSec = death.timestamp % 60;
+                fprintf(f, "  Death #%d: Location(%d,%d), Time %d:%02d\n",
+                    death.deathNumber, death.x, death.y, deathMin, deathSec);
+            }
+        }
+        fprintf(f, "\n");
+    }
+
+    fclose(f);
+
+    vlog_info("TELEMETRY: Successfully wrote data to %s", filepath);
+    vlog_info("TELEMETRY: Total deaths=%d, Time=%d:%02d, Furthest room=%d, Checkpoints=%d, KPM=%.2f",
+        deathcounts, totalMinutes, totalSeconds, ddaFurthestRoomReached,
+        telemetryCheckpointsActivated, kpm);
+}
+
+#ifdef __EMSCRIPTEN__
+static char* telemetryJSONBuffer = NULL;
+
+static void telemetryFetchSuccess(emscripten_fetch_t* fetch) {
+    vlog_info("TELEMETRY: Successfully sent to Google Sheets");
+    emscripten_fetch_close(fetch);
+    if (telemetryJSONBuffer) {
+        free(telemetryJSONBuffer);
+        telemetryJSONBuffer = NULL;
+    }
+}
+
+static void telemetryFetchFail(emscripten_fetch_t* fetch) {
+    vlog_error("TELEMETRY: Failed to send to Google Sheets (status: %d)", fetch->status);
+    emscripten_fetch_close(fetch);
+    if (telemetryJSONBuffer) {
+        free(telemetryJSONBuffer);
+        telemetryJSONBuffer = NULL;
+    }
+}
+
+void Game::telemetrySendToGoogleSheets(int totalGameSeconds, float kpm)
+{
+    std::string json = "{";
+
+    json += "\"group\":\"" + std::string(ddaEnabled ? "EXPERIMENT (DDA)" : "CONTROL (Fixed)") + "\",";
+    json += "\"totalDeaths\":" + std::to_string(deathcounts) + ",";
+    json += "\"totalTimeSeconds\":" + std::to_string(totalGameSeconds) + ",";
+    json += "\"furthestRoom\":" + std::to_string(ddaFurthestRoomReached) + ",";
+    json += "\"furthestRoomName\":\"" + telemetryGetRoomName(ddaFurthestRoomReached) + "\",";
+    json += "\"checkpointsActivated\":" + std::to_string(telemetryCheckpointsActivated) + ",";
+
+    char kpmStr[32];
+    SDL_snprintf(kpmStr, sizeof(kpmStr), "%.2f", kpm);
+    json += "\"keyPressesPerMinute\":" + std::string(kpmStr) + ",";
+
+    json += "\"roomData\":[";
+    bool firstRoom = true;
+    for (int i = 0; i <= ddaFurthestRoomReached && i < DDA_MAX_ROOMS; i++)
+    {
+        if (!telemetryRooms[i].visited) continue;
+
+        if (!firstRoom) json += ",";
+        firstRoom = false;
+
+        TelemetryRoomData& room = telemetryRooms[i];
+        json += "{";
+        json += "\"room\":" + std::to_string(i) + ",";
+        json += "\"name\":\"" + telemetryGetRoomName(i) + "\",";
+        json += "\"timeSpent\":" + std::to_string(room.timeSpentSeconds) + ",";
+        if (ddaEnabled)
+        {
+            json += "\"difficultyOnEntry\":" + std::to_string(room.difficultyOnEntry) + ",";
+        }
+        json += "\"deaths\":" + std::to_string(room.totalDeaths);
+        json += "}";
+    }
+    json += "]";
+    json += "}";
+
+    // Copy to persistent buffer (fetch is async)
+    if (telemetryJSONBuffer) {
+        free(telemetryJSONBuffer);
+    }
+    telemetryJSONBuffer = (char*)malloc(json.length() + 1);
+    strcpy(telemetryJSONBuffer, json.c_str());
+
+    emscripten_fetch_attr_t attr;
+    emscripten_fetch_attr_init(&attr);
+    strcpy(attr.requestMethod, "POST");
+    attr.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY;
+    attr.onsuccess = telemetryFetchSuccess;
+    attr.onerror = telemetryFetchFail;
+
+    const char* headers[] = { "Content-Type", "application/json", NULL };
+    attr.requestHeaders = headers;
+    attr.requestData = telemetryJSONBuffer;
+    attr.requestDataSize = json.length();
+
+    emscripten_fetch(&attr, "https://script.google.com/macros/s/AKfycbzV7NQQb5tGHoXJUKDts39EWVp1AmF6_qRqaDCmb1n8d3aZH8wE6Vh7bjOWHVJCsXIcmA/exec");
+
+    vlog_info("TELEMETRY: Sending data to Google Sheets...");
+}
+#endif
+
+/* OLD WriteLog
+void Game::telemetryWriteLog()
+{
     //Generate unique filename with timestamp
     time_t now = time(NULL);
     struct tm* t = localtime(&now);
@@ -8990,7 +9185,7 @@ void Game::telemetryWriteLog()
 
     //Open file in saves directory
     char filepath[256];
-    SDL_snprintf(filepath, sizeof(filepath), "saves/%s", filename);
+    SDL_snprintf(filepath, sizeof(filepath), "%s", filename);
 
     FILE* f = fopen(filepath, "w");
     if (!f)
@@ -9020,7 +9215,7 @@ void Game::telemetryWriteLog()
     fprintf(f, "Total Time: %d:%02d (minutes:seconds)\n", totalMinutes, totalSeconds);
     fprintf(f, "Furthest Room Reached: %d (%s)\n",
         ddaFurthestRoomReached, telemetryGetRoomName(ddaFurthestRoomReached).c_str());
-    fprintf(f, "Checkpoints Activated (first-time only): %d\n", telemetryCheckpointsActivated);
+    fprintf(f, "Unique Checkpoints Activated: %d\n", telemetryCheckpointsActivated);
     fprintf(f, "Total Key Presses: %d\n", telemetryTotalKeyPresses);
     fprintf(f, "Key Presses Per Minute: %.2f\n\n", kpm);
 
@@ -9037,7 +9232,12 @@ void Game::telemetryWriteLog()
 
         fprintf(f, "--- Room %d: %s ---\n", i, telemetryGetRoomName(i).c_str());
         fprintf(f, "Time Spent: %d:%02d\n", roomMin, roomSec);
-        fprintf(f, "Difficulty on Entry: %d\n", room.difficultyOnEntry);
+        
+        //Only for DDA group
+        if (ddaEnabled)
+        {
+            fprintf(f, "Difficulty on Entry: %d\n", room.difficultyOnEntry);
+        }
         fprintf(f, "Total Deaths: %d\n", room.totalDeaths);
 
         if (room.deathCount > 0)
@@ -9063,3 +9263,4 @@ void Game::telemetryWriteLog()
         deathcounts, totalMinutes, totalSeconds, ddaFurthestRoomReached,
         telemetryCheckpointsActivated, kpm);
 }
+*/
