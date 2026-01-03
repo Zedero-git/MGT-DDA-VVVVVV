@@ -201,12 +201,18 @@ public:
         int timestamp;                        //Game time in seconds when death occurred
     };
 
+    //Per-room DDA tracking that persist after room changes
+    struct DDARoomState {
+        int deaths;                      //Total deaths in this room
+        int timeSpentSeconds;            //Accumulated time in this room
+        bool struggled;                  //Has player struggled in this room?
+    };
+
     //DDA System Variables
-    
-    bool ddaEnabled;                          // Enable/disable entire DDA system
+    bool ddaEnabled;                          //Enable/disable entire DDA system
 
     //Core difficulty
-    int ddaDifficulty;                        //1-7, starts at 4
+    int ddaDifficulty;                        //1-7, will start at 4
     int ddaCurrentRoom;                       //Current room player is in (0-63)
     int ddaFurthestRoomReached;               //Furthest room player has entered
 
@@ -219,33 +225,34 @@ public:
     //Death location tracking (store last 10 deaths)
     static const int DDA_MAX_DEATH_RECORDS = 10;
     DDADeathRecord ddaDeathRecords[DDA_MAX_DEATH_RECORDS];
-    int ddaDeathRecordCount;                     // How many records currently stored
+    int ddaDeathRecordCount;                     //How many records currently stored
 
     //Checkpoint spawning
     //Index corresponds to room number, true = extra checkpoint spawned
     static const int DDA_MAX_ROOMS = 64;
-    bool ddaAddCheckpoint1[DDA_MAX_ROOMS];  // First checkpoint in room
-    bool ddaAddCheckpoint2[DDA_MAX_ROOMS];  // Second checkpoint in room (if there is one)
+    bool ddaAddCheckpoint1[DDA_MAX_ROOMS];  //First checkpoint in room
+    bool ddaAddCheckpoint2[DDA_MAX_ROOMS];  //Second checkpoint in room (if there is one)
 
     //Rooms configuration (set these up during initialization)
     int ddaDeathThreshold[DDA_MAX_ROOMS];     // Deaths before considered "struggling"
-    int ddaShortTimeThreshold[DDA_MAX_ROOMS];      // Seconds before considered "struggling lightly"
-    int ddaLongTimeThreshold[DDA_MAX_ROOMS];      // Seconds before considered "struggling heavily"
+    int ddaShortTimeThreshold[DDA_MAX_ROOMS];      //Seconds before considered "struggling lightly"
+    int ddaLongTimeThreshold[DDA_MAX_ROOMS];      //Seconds before considered "struggling heavily"
 
-    bool ddaRoomHasDDA[DDA_MAX_ROOMS];        // false for tutorial rooms and final rooms
-    int ddaRoomLevel[DDA_MAX_ROOMS];          // 0 = tutorial/final, 1 = Space Station, 2 = Laboratory
+    bool ddaRoomHasDDA[DDA_MAX_ROOMS];        //false for tutorial rooms and final rooms
+    int ddaRoomLevel[DDA_MAX_ROOMS];          //0 = tutorial/final, 1 = Space Station, 2 = Laboratory
+    DDARoomState ddaRoomState[DDA_MAX_ROOMS]; //Room DDA tracking
 
     //DDA System Functions
-    void ddaInit();                              // Initialize DDA system
-    void ddaReset();                             // Reset for new game
-    void ddaOnPlayerDeath();                     // Called when player dies
-    void ddaOnRoomEnter(int room);         // Called when entering new room
-    void ddaOnRoomComplete(int room);      // Called when completing a room
-    void ddaEvaluateAndAdjust();                 // Evaluate struggle and adjust difficulty
-    void ddaAddCheckpointsForRoom(int room);  // Determine checkpoints for a room
-    bool ddaIsStrugglingInRoom();             // Check if player is currently struggling
-    int ddaGetTotalGameSeconds();                // Get current game time in seconds
-    int ddaGetRoomIndex(const std::string& name); // Map room name to index (0-63)
+    void ddaInit();                              //Initialize DDA system
+    void ddaReset();                             //Reset for new game
+    void ddaOnPlayerDeath();                     //Called when player dies
+    void ddaOnRoomEnter(int room);         //Called when entering new room
+    void ddaOnRoomComplete(int room);      //Called when completing a room
+    void ddaEvaluateAndAdjust();                 //Evaluate struggle and adjust difficulty
+    void ddaAddCheckpointsForRoom(int room);  //Determine checkpoints for a room
+    bool ddaIsStrugglingInRoom();             //Check if player is currently struggling
+    int ddaGetTotalGameSeconds();                //Get current game time in seconds
+    int ddaGetRoomIndex(const std::string& name); //Map room name to index (0-63)
     //DDA RESEARCH - STOP
 
     //=======================================================================
@@ -275,6 +282,10 @@ public:
     bool telemetryKeyWasDown_right;
     bool telemetryKeyWasDown_action;
 
+    //Key press tracking per minute
+    static const int TELEMETRY_MAX_MINUTES = 60;  //Up to 60 minutes of gameplay
+    int telemetryKeyPressesPerMinute[TELEMETRY_MAX_MINUTES];
+
     //Telemetry functions
     void telemetryInit();                             //Initialize telemetry system
     void telemetryOnRoomEnter(int room);              //Called when entering a room (first time only records difficulty)
@@ -294,6 +305,7 @@ public:
 
     //DDA RESEARCH: End of telemetry
 
+    
     void init(void);
     void setdefaultcontrollerbuttons(void);
 

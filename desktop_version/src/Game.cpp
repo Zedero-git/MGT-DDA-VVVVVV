@@ -8095,6 +8095,14 @@ void Game::ddaInit()
         ddaAddCheckpoint2[i] = false;
     }
 
+    //Initialize DDA state for every room
+    for (int i = 0; i < DDA_MAX_ROOMS; i++)
+    {
+        ddaRoomState[i].deaths = 0;
+        ddaRoomState[i].timeSpentSeconds = 0;
+        ddaRoomState[i].struggled = false;
+    }
+
     //===========================================
     //SPACE STATION - TUTORIAL ROOMS (0-8): No DDA
     //Note: Room 8 (Gantry and Dolly) counts as room 9
@@ -8196,7 +8204,7 @@ void Game::ddaInit()
     ddaLongTimeThreshold[22] = 90;
 
     //===========================================
-    //LABORATORY (23-63): Level 2 DDA
+    //LABORATORY (23-63): Phase 2 DDA
     //===========================================
 
     //Room 23: Get Ready To Bounce
@@ -8465,6 +8473,14 @@ void Game::ddaReset()
 
     //Note: Don't reset checkpoint arrays here if you want 
     //      checkpoints to persist across deaths. Reset them in ddaInit() only.
+
+    //Reset for every room state
+    for (int i = 0; i < DDA_MAX_ROOMS; i++)
+    {
+        ddaRoomState[i].deaths = 0;
+        ddaRoomState[i].timeSpentSeconds = 0;
+        ddaRoomState[i].struggled = false;
+    }
 }
 
 void Game::ddaOnPlayerDeath()
@@ -8483,6 +8499,7 @@ void Game::ddaOnPlayerDeath()
     }
 
     ddaDeathsInRoom++;
+    ddaRoomState[ddaCurrentRoom].deaths = ddaDeathsInRoom;
 
     if (ddaDeathRecordCount < DDA_MAX_DEATH_RECORDS)
     {
@@ -8510,7 +8527,9 @@ void Game::ddaOnPlayerDeath()
     //Check if now struggling
     bool wasStruggling = ddaStruggledThisRoom;
     ddaStruggledThisRoom = ddaIsStrugglingInRoom();
+    ddaRoomState[ddaCurrentRoom].struggled = ddaStruggledThisRoom;
 
+    /*
     //If struggling and haven't reached next room, spawn checkpoints there
     if (ddaStruggledThisRoom && ddaCurrentRoom + 1 < DDA_MAX_ROOMS)
     {
@@ -8521,7 +8540,7 @@ void Game::ddaOnPlayerDeath()
         {
             ddaAddCheckpointsForRoom(nextRoom);
         }
-    }
+    }*/
 }
 
 bool Game::ddaIsStrugglingInRoom()
@@ -8531,7 +8550,7 @@ bool Game::ddaIsStrugglingInRoom()
         return false;
     }
 
-    int timeInRoom = ddaGetTotalGameSeconds() - ddaRoomStartTime;
+    int timeInRoom = (ddaGetTotalGameSeconds() - ddaRoomStartTime) + ddaRoomState[ddaCurrentRoom].timeSpentSeconds;
     bool deathThresholdExceeded = (ddaDeathsInRoom >= ddaDeathThreshold[ddaCurrentRoom]);
     bool shortTimeExceeded = (timeInRoom >= ddaShortTimeThreshold[ddaCurrentRoom]);
     bool longTimeExceeded = (timeInRoom >= ddaLongTimeThreshold[ddaCurrentRoom]);
@@ -8614,6 +8633,78 @@ void Game::ddaOnRoomEnter(int room)
         return;
     }
 
+    //If same room, do nothing
+    if (room == ddaCurrentRoom)
+    {
+        return;
+    }
+
+    //Save current room's state before leaving
+    ddaRoomState[ddaCurrentRoom].deaths = ddaDeathsInRoom;
+    ddaRoomState[ddaCurrentRoom].timeSpentSeconds += (ddaGetTotalGameSeconds() - ddaRoomStartTime);
+    ddaRoomState[ddaCurrentRoom].struggled = ddaStruggledThisRoom;
+
+    //Complete the previous room only if moving forward
+    if (room > ddaCurrentRoom)
+    {        
+        if (room > ddaFurthestRoomReached)
+        {
+            //TELEMETRY: Record time spent in previous room
+            telemetryOnRoomExit(ddaCurrentRoom);
+        }
+        ddaOnRoomComplete(ddaCurrentRoom);
+    }
+
+    //Update furthest room reached
+    bool isNewFurthestRoom = (room > ddaFurthestRoomReached);
+    if (isNewFurthestRoom)
+    {
+        ddaFurthestRoomReached = room;
+        ddaAddCheckpointsForRoom(room);
+
+        //TELEMETRY: Record first visit (records difficulty on entry)
+        telemetryOnRoomEnter(room);
+    }
+
+    //Switch to new room
+    ddaCurrentRoom = room;
+
+    //Restore or initialize room state
+    if (isNewFurthestRoom)
+    {
+        //New room, so reset
+        ddaDeathsInRoom = 0;
+        ddaRoomStartTime = ddaGetTotalGameSeconds();
+        ddaStruggledThisRoom = false;
+        ddaDeathRecordCount = 0;
+    }
+    else
+    {
+        //Revisiting a room, so restore previous state
+        ddaDeathsInRoom = ddaRoomState[room].deaths;
+        ddaRoomStartTime = ddaGetTotalGameSeconds();
+        ddaStruggledThisRoom = ddaRoomState[room].struggled;
+        //Death records are not restored (they're for same-spot detection, 
+        //which should reset on room change to prevent stale data)
+        ddaDeathRecordCount = 0;
+    }
+
+    //Debug output
+    vlog_info("DDA: Entered room %d | Difficulty: %d | Deaths: %d | New: %s",
+        ddaCurrentRoom,
+        ddaDifficulty,
+        ddaDeathsInRoom,
+        isNewFurthestRoom ? "YES" : "NO");
+}
+
+/*void Game::ddaOnRoomEnter(int room)
+{
+    //Bounds check
+    if (room < 0 || room >= DDA_MAX_ROOMS)
+    {
+        return;
+    }
+
     //TELEMETRY: Record first visit (records difficulty on entry)
     telemetryOnRoomEnter(room);
 
@@ -8626,13 +8717,13 @@ void Game::ddaOnRoomEnter(int room)
     //If entering a new room (not returning to previous)
     if (room != ddaCurrentRoom)
     {
-        //TELEMETRY: Record time spent in previous room before switching
-        telemetryOnRoomExit(ddaCurrentRoom);
-        
         //Complete the previous room first (only if moving forward)
         if (room > ddaCurrentRoom)
         {
             ddaOnRoomComplete(ddaCurrentRoom);
+            
+            //TELEMETRY: Record time spent in previous room before switching
+            telemetryOnRoomExit(ddaCurrentRoom);
         }
 
         ddaCurrentRoom = room;
@@ -8648,7 +8739,7 @@ void Game::ddaOnRoomEnter(int room)
             ddaCurrentRoom,
             ddaDifficulty);
     }
-}
+}*/
 
 void Game::ddaOnRoomComplete(int room)
 {
@@ -8732,7 +8823,7 @@ void Game::ddaAddCheckpointsForRoom(int room)
         }
     }
 
-    //Apply checkpoint spawning (can only add, never remove already spawned)
+    //Apply checkpoint spawning
     if (checkpointsToAdd >= 1 && !ddaAddCheckpoint1[room])
     {
         ddaAddCheckpoint1[room] = true;
@@ -8850,6 +8941,11 @@ void Game::telemetryInit()
     telemetryKeyWasDown_left = false;
     telemetryKeyWasDown_right = false;
     telemetryKeyWasDown_action = false;
+    
+    for (int i = 0; i < TELEMETRY_MAX_MINUTES; i++)
+    {
+        telemetryKeyPressesPerMinute[i] = 0;
+    }
 }
 
 void Game::telemetryOnRoomEnter(int room)
@@ -8868,9 +8964,8 @@ void Game::telemetryOnRoomExit(int room)
 {
     if (room < 0 || room >= DDA_MAX_ROOMS) return;
 
-    //Add time spent in this room session
-    int timeThisSession = ddaGetTotalGameSeconds() - ddaRoomStartTime;
-    telemetryRooms[room].timeSpentSeconds += timeThisSession;
+    //Total time spent in a room before entering a brand new one
+    telemetryRooms[room].timeSpentSeconds = ddaRoomState[room].timeSpentSeconds;
 }
 
 void Game::telemetryOnDeath(int room, int x, int y)
@@ -8879,7 +8974,7 @@ void Game::telemetryOnDeath(int room, int x, int y)
 
     telemetryRooms[room].totalDeaths++;
 
-    //Record death details if we have space (reusing DDADeathRecord struct)
+    //Record death details if we have space, reusing DDADeathRecord
     int idx = telemetryRooms[room].deathCount;
     if (idx < 100)
     {
@@ -8917,6 +9012,14 @@ void Game::telemetryOnCheckpointActivated(int checkpointID)
 void Game::telemetryOnKeyPress()
 {
     telemetryTotalKeyPresses++;
+
+    int elapsedSeconds = ddaGetTotalGameSeconds() - telemetryGameStartSeconds;
+    int currentMinute = elapsedSeconds / 60;
+
+    if (currentMinute >= 0 && currentMinute < TELEMETRY_MAX_MINUTES)
+    {
+        telemetryKeyPressesPerMinute[currentMinute]++;
+    }
 }
 
 void Game::telemetryUpdateKeyTracking()
@@ -9042,7 +9145,7 @@ void Game::telemetryWriteLocalFile(int totalGameSeconds, float kpm)
     fprintf(f, "Total Key Presses: %d\n", telemetryTotalKeyPresses);
     fprintf(f, "Key Presses Per Minute: %.2f\n\n", kpm);
 
-    //Write per-room data
+    //Write data for every room
     fprintf(f, "=== PER-ROOM DATA ===\n\n");
 
     for (int i = 0; i <= ddaFurthestRoomReached && i < DDA_MAX_ROOMS; i++)
@@ -9075,6 +9178,15 @@ void Game::telemetryWriteLocalFile(int totalGameSeconds, float kpm)
             }
         }
         fprintf(f, "\n");
+    }
+
+    //Write per-minute KPM breakdown
+    fprintf(f, "=== KEY PRESSES PER MINUTE ===\n");
+    int gameplaySeconds = totalGameSeconds - telemetryGameStartSeconds;
+    int totalMinutesPlayed = (gameplaySeconds + 59) / 60;  //Round up to include partial minute
+    for (int m = 0; m < totalMinutesPlayed && m < TELEMETRY_MAX_MINUTES; m++)
+    {
+        fprintf(f, "Minute %d: %d\n", m + 1, telemetryKeyPressesPerMinute[m]);
     }
 
     fclose(f);
@@ -9143,6 +9255,16 @@ void Game::telemetrySendToGoogleSheets(int totalGameSeconds, float kpm)
         json += "}";
     }
     json += "]";
+    //Per-minute breakdown
+    json += "\"keyPressesPerMinute\":[";
+    int gameplaySeconds = totalGameSeconds - telemetryGameStartSeconds;
+    int totalMinutesPlayed = (gameplaySeconds + 59) / 60;
+    for (int m = 0; m < totalMinutesPlayed && m < TELEMETRY_MAX_MINUTES; m++)
+    {
+        if (m > 0) json += ",";
+        json += std::to_string(telemetryKeyPressesPerMinute[m]);
+    }
+    json += "],";
     json += "}";
 
     // Copy to persistent buffer (fetch is async)
