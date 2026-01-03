@@ -203,13 +203,14 @@ public:
 
     //Per-room DDA tracking that persist after room changes
     struct DDARoomState {
-        int deaths;                      //Total deaths in this room
-        int timeSpentSeconds;            //Accumulated time in this room
-        bool struggled;                  //Has player struggled in this room?
+        int deaths;                           //Total deaths in this room
+        int timeSpentSeconds;                 //Accumulated time in this room
+        bool struggled;                       //Has player struggled in this room?
     };
 
     //DDA System Variables
     bool ddaEnabled;                          //Enable/disable entire DDA system
+    bool ddaFirstDDARoom;                     //True until first DDA room is completed
 
     //Core difficulty
     int ddaDifficulty;                        //1-7, will start at 4
@@ -221,6 +222,7 @@ public:
     int ddaRoomStartTime;                     //Timestamp when room was entered (in total seconds)
     bool ddaStruggledLastRoom;                //Did player struggle in previous room?
     bool ddaStruggledThisRoom;                //Is player currently struggling?
+    int ddaSuccessStreak;
 
     //Death location tracking (store last 10 deaths)
     static const int DDA_MAX_DEATH_RECORDS = 10;

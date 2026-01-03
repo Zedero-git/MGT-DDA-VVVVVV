@@ -3457,7 +3457,7 @@ void scriptclass::hardreset(void)
     obj.customactivitytext = "";
     obj.customactivitypositiony = -1;
 
-    //DDA RESEARCH: Initialize DDA system and telemetry
+    //DDA RESEARCH: Reset and init
     game.ddaInit();
     game.telemetryInit();
 }

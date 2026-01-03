@@ -6,12 +6,13 @@
 #include <string.h>
 #include <tinyxml2.h>
 
-//DDA RESEARCH: For timestamp and file writing
+//DDA RESEARCH: For debugging, timestamp and file writing
 #include <ctime>
 #include <cstdio>
 #ifdef __EMSCRIPTEN__
 #include <emscripten/fetch.h>
 #endif
+#include "debug.h"
 
 #include "ButtonGlyphs.h"
 #include "Constants.h"
@@ -392,6 +393,9 @@ void Game::init(void)
 #else
     checkpoint_saving = false;
 #endif
+
+    //DDA RESEARCH: Init DDA
+    ddaInit();
 
     setdefaultcontrollerbuttons();
 }
@@ -7732,7 +7736,6 @@ void Game::quittomenu(void)
         DEFER_CALLBACK(returntoeditor_callback);
         return;
     }
-
     gamestate = TITLEMODE;
     graphics.fademode = FADE_START_FADEIN;
     FILESYSTEM_unmountAssets();
@@ -7749,7 +7752,7 @@ void Game::quittomenu(void)
     //TELEMETRY: record, write and export
     telemetryOnRoomExit(ddaCurrentRoom);  //Record time for final room
     telemetryWriteLog();                  //Write all data to file
-    vlog_info("DDA RESEARCH: Telemetry export complete");
+    DEBUG_LOG("DDA RESEARCH: Telemetry export complete");
 
     if (translator_cutscene_test)
     {
@@ -8072,7 +8075,6 @@ bool Game::isingamecompletescreen(void)
 
 
 //DDA RESEARCH
-
 int Game::ddaGetTotalGameSeconds()
 {
     return hours * 3600 + minutes * 60 + seconds;
@@ -8082,7 +8084,7 @@ void Game::ddaInit()
 {
     // Change to false for control group, true for experiment group
     ddaEnabled = true;
-    
+    DEBUG_LOG("DDA: System initialized, ddaEnabled = %s", ddaEnabled ? "true" : "false");
     //Initialize all arrays first
     for (int i = 0; i < DDA_MAX_ROOMS; i++)
     {
@@ -8116,18 +8118,18 @@ void Game::ddaInit()
     }
 
     //===========================================
-    //SPACE STATION - Post-tutorial (9-22): Phase 1 DDA
+    //SPACE STATION - Post-tutorial (9-22): Level 1 DDA
     //===========================================
 
     //Room 9: Gantry and Dolly
     ddaRoomLevel[9] = 1;
-    ddaDeathThreshold[9] = 1;
-    ddaShortTimeThreshold[9] = 30;
-    ddaLongTimeThreshold[9] = 90;
+    ddaDeathThreshold[9] = 2;
+    ddaShortTimeThreshold[9] = 200;
+    ddaLongTimeThreshold[9] = 200;
 
     //Room 10: The Yes Men
     ddaRoomLevel[10] = 1;
-    ddaDeathThreshold[10] = 6;
+    ddaDeathThreshold[10] = 5;
     ddaShortTimeThreshold[10] = 30;
     ddaLongTimeThreshold[10] = 90;
 
@@ -8204,7 +8206,7 @@ void Game::ddaInit()
     ddaLongTimeThreshold[22] = 90;
 
     //===========================================
-    //LABORATORY (23-63): Phase 2 DDA
+    //LABORATORY (23-63): Level 2 DDA
     //===========================================
 
     //Room 23: Get Ready To Bounce
@@ -8460,6 +8462,9 @@ void Game::ddaReset()
     ddaStruggledLastRoom = false;
     ddaStruggledThisRoom = false;
     ddaDeathRecordCount = 0;
+    ddaSuccessStreak = 0;
+
+    ddaFirstDDARoom = true;
 
     //Clear death records
     for (int i = 0; i < DDA_MAX_DEATH_RECORDS; i++)
@@ -8529,7 +8534,6 @@ void Game::ddaOnPlayerDeath()
     ddaStruggledThisRoom = ddaIsStrugglingInRoom();
     ddaRoomState[ddaCurrentRoom].struggled = ddaStruggledThisRoom;
 
-    /*
     //If struggling and haven't reached next room, spawn checkpoints there
     if (ddaStruggledThisRoom && ddaCurrentRoom + 1 < DDA_MAX_ROOMS)
     {
@@ -8540,7 +8544,7 @@ void Game::ddaOnPlayerDeath()
         {
             ddaAddCheckpointsForRoom(nextRoom);
         }
-    }*/
+    }
 }
 
 bool Game::ddaIsStrugglingInRoom()
@@ -8660,7 +8664,7 @@ void Game::ddaOnRoomEnter(int room)
     if (isNewFurthestRoom)
     {
         ddaFurthestRoomReached = room;
-        ddaAddCheckpointsForRoom(room);
+        //ddaAddCheckpointsForRoom(room);
 
         //TELEMETRY: Record first visit (records difficulty on entry)
         telemetryOnRoomEnter(room);
@@ -8690,7 +8694,7 @@ void Game::ddaOnRoomEnter(int room)
     }
 
     //Debug output
-    vlog_info("DDA: Entered room %d | Difficulty: %d | Deaths: %d | New: %s",
+    DEBUG_LOG("DDA: Entered room %d | Difficulty: %d | Deaths: %d | New: %s",
         ddaCurrentRoom,
         ddaDifficulty,
         ddaDeathsInRoom,
@@ -8735,7 +8739,7 @@ void Game::ddaOnRoomEnter(int room)
         ddaDeathRecordCount = 0;
 
         // Debug output
-        vlog_info("DDA: Entered room %d | Difficulty: %d",
+        DEBUG_LOG("DDA: Entered room %d | Difficulty: %d",
             ddaCurrentRoom,
             ddaDifficulty);
     }
@@ -8750,6 +8754,14 @@ void Game::ddaOnRoomComplete(int room)
         return;
     }
 
+    //First check if this is room 9 (first DDA room), we don't want struggle to be checked during tutorial
+    if (ddaFirstDDARoom)
+    {
+        ddaStruggledLastRoom = ddaStruggledThisRoom;
+        ddaFirstDDARoom = false;
+        return;
+    }
+
     //Evaluate difficulty adjustment
     ddaEvaluateAndAdjust();
 
@@ -8758,11 +8770,11 @@ void Game::ddaOnRoomComplete(int room)
 }
 
 void Game::ddaEvaluateAndAdjust()
-{
-    int previousDifficulty = ddaDifficulty;
-    
+{    
     if (ddaStruggledThisRoom)
     {
+        ddaSuccessStreak = 0;
+        
         //Player struggled this room
         if (ddaStruggledLastRoom)
         {
@@ -8776,14 +8788,17 @@ void Game::ddaEvaluateAndAdjust()
     }
     else
     {
+        ddaSuccessStreak++;
+        
         //Player succeeded (didn't struggle)
-        if (!ddaStruggledLastRoom)
+        if (ddaSuccessStreak >= 2)
         {
             //Succeeded twice in a row -> increase difficulty
             if (ddaDifficulty < 7)
             {
                 ddaDifficulty++;
             }
+            ddaSuccessStreak = 0; //Reset streak so player needs to succeed twice in a row again.
         }
         //If struggled last time but succeeded now, don't change, they're learning so let them
     }
@@ -8951,7 +8966,6 @@ void Game::telemetryInit()
 void Game::telemetryOnRoomEnter(int room)
 {
     if (room < 0 || room >= DDA_MAX_ROOMS) return;
-
     //Record difficulty on FIRST visit only
     if (!telemetryRooms[room].visited)
     {
@@ -9115,13 +9129,13 @@ void Game::telemetryWriteLocalFile(int totalGameSeconds, float kpm)
         ddaEnabled ? "DDA" : "CONTROL");
 
     //Open file in root directory
-    char filepath[256];
-    SDL_snprintf(filepath, sizeof(filepath), "%s", filename);
+    char filepath[512];
+    SDL_snprintf(filepath, sizeof(filepath), "%s%s", saveFilePath, filename);
 
     FILE* f = fopen(filepath, "w");
     if (!f)
     {
-        vlog_error("TELEMETRY: Failed to open file: %s", filepath);
+        DEBUG_LOG("TELEMETRY: Failed to open file: %s", filepath);
         return;
     }
 
@@ -9143,7 +9157,7 @@ void Game::telemetryWriteLocalFile(int totalGameSeconds, float kpm)
         ddaFurthestRoomReached, telemetryGetRoomName(ddaFurthestRoomReached).c_str());
     fprintf(f, "Unique Checkpoints Activated: %d\n", telemetryCheckpointsActivated);
     fprintf(f, "Total Key Presses: %d\n", telemetryTotalKeyPresses);
-    fprintf(f, "Key Presses Per Minute: %.2f\n\n", kpm);
+    fprintf(f, "Average Key Presses Per Minute: %.2f\n\n", kpm);
 
     //Write data for every room
     fprintf(f, "=== PER-ROOM DATA ===\n\n");
@@ -9191,8 +9205,8 @@ void Game::telemetryWriteLocalFile(int totalGameSeconds, float kpm)
 
     fclose(f);
 
-    vlog_info("TELEMETRY: Successfully wrote data to %s", filepath);
-    vlog_info("TELEMETRY: Total deaths=%d, Time=%d:%02d, Furthest room=%d, Checkpoints=%d, KPM=%.2f",
+    DEBUG_LOG("TELEMETRY: Successfully wrote data to %s", filepath);
+    DEBUG_LOG("TELEMETRY: Total deaths=%d, Time=%d:%02d, Furthest room=%d, Checkpoints=%d, KPM=%.2f",
         deathcounts, totalMinutes, totalSeconds, ddaFurthestRoomReached,
         telemetryCheckpointsActivated, kpm);
 }
@@ -9201,7 +9215,7 @@ void Game::telemetryWriteLocalFile(int totalGameSeconds, float kpm)
 static char* telemetryJSONBuffer = NULL;
 
 static void telemetryFetchSuccess(emscripten_fetch_t* fetch) {
-    vlog_info("TELEMETRY: Successfully sent to Google Sheets");
+    DEBUG_LOG("TELEMETRY: Successfully sent to Google Sheets");
     emscripten_fetch_close(fetch);
     if (telemetryJSONBuffer) {
         free(telemetryJSONBuffer);
@@ -9210,7 +9224,7 @@ static void telemetryFetchSuccess(emscripten_fetch_t* fetch) {
 }
 
 static void telemetryFetchFail(emscripten_fetch_t* fetch) {
-    vlog_error("TELEMETRY: Failed to send to Google Sheets (status: %d)", fetch->status);
+    DEBUG_LOG("TELEMETRY: Failed to send to Google Sheets (status: %d)", fetch->status);
     emscripten_fetch_close(fetch);
     if (telemetryJSONBuffer) {
         free(telemetryJSONBuffer);
@@ -9288,7 +9302,7 @@ void Game::telemetrySendToGoogleSheets(int totalGameSeconds, float kpm)
 
     emscripten_fetch(&attr, "https://script.google.com/macros/s/AKfycbzV7NQQb5tGHoXJUKDts39EWVp1AmF6_qRqaDCmb1n8d3aZH8wE6Vh7bjOWHVJCsXIcmA/exec");
 
-    vlog_info("TELEMETRY: Sending data to Google Sheets...");
+    DEBUG_LOG("TELEMETRY: Sending data to Google Sheets...");
 }
 #endif
 
@@ -9380,8 +9394,8 @@ void Game::telemetryWriteLog()
     fclose(f);
 
     //Debug output to console
-    vlog_info("TELEMETRY: Successfully wrote data to %s", filepath);
-    vlog_info("TELEMETRY: Total deaths=%d, Time=%d:%02d, Furthest room=%d, Checkpoints=%d, KPM=%.2f",
+    DEBUG_LOG("TELEMETRY: Successfully wrote data to %s", filepath);
+    DEBUG_LOG("TELEMETRY: Total deaths=%d, Time=%d:%02d, Furthest room=%d, Checkpoints=%d, KPM=%.2f",
         deathcounts, totalMinutes, totalSeconds, ddaFurthestRoomReached,
         telemetryCheckpointsActivated, kpm);
 }
