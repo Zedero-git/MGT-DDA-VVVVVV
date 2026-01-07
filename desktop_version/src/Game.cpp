@@ -8468,13 +8468,13 @@ void Game::ddaInit()
 
 void Game::ddaReset()
 {
-    ddaDifficulty = 4;  //Starting difficulty, we start right in the middle
+    ddaDifficulty = 5;  //Starting difficulty, we start 1 above the middle for room 9, which behaves differently
     ddaCurrentRoom = 0;
     ddaFurthestRoomReached = 0;
     ddaDeathsInRoom = 0;
     ddaRoomStartTime = 0;
     ddaSameSpotDeaths = 0;
-    ddaStruggledLastRoom = false;
+    //ddaStruggledLastRoom = false;
     ddaStruggledThisRoom = false;
     ddaDeathRecordCount = 0;
     ddaSuccessStreak = 0;
@@ -8504,9 +8504,81 @@ void Game::ddaReset()
     }
 }
 
+
+void Game::ddaUpdate()
+{
+    if (!ddaEnabled) return;
+    if (!ddaRoomHasDDA[ddaCurrentRoom]) return;
+    if (ddaRoomState[ddaCurrentRoom].completed) return;
+
+    //1. Check if struggling
+    if (!ddaStruggledThisRoom)
+    {
+        int timeInRoom = (ddaGetTotalGameSeconds() - ddaRoomStartTime) + ddaRoomState[ddaCurrentRoom].timeSpentSeconds;
+        bool deathThresholdExceeded = (ddaDeathsInRoom >= ddaDeathThreshold[ddaCurrentRoom]);
+        bool shortTimeExceeded = (timeInRoom >= ddaShortTimeThreshold[ddaCurrentRoom]);
+        bool longTimeExceeded = (timeInRoom >= ddaLongTimeThreshold[ddaCurrentRoom]);
+        bool diedThreeTimesInSameSpot = (ddaSameSpotDeaths >= 3);
+
+        bool isStruggling = false;
+
+        if (longTimeExceeded)
+            isStruggling = true;
+        else if (deathThresholdExceeded && shortTimeExceeded)
+            isStruggling = true;
+        else if (diedThreeTimesInSameSpot && shortTimeExceeded)
+            isStruggling = true;
+        else if (diedThreeTimesInSameSpot && deathThresholdExceeded)
+            isStruggling = true;
+
+        if (isStruggling)
+        {
+            ddaStruggledThisRoom = true;
+            ddaRoomState[ddaCurrentRoom].struggled = true;
+
+            //Decrease difficulty
+            ddaConsecutiveSuccesses = 0;
+            ddaConsecutiveStruggles++;
+
+            if (ddaCurrentRoom == 9 && ddaConsecutiveStruggles == 1 && ddaDifficulty > 1)
+            {
+                ddaDifficulty--;
+            }
+            else if (ddaConsecutiveStruggles >= 2 && ddaDifficulty > 1)
+            {
+                ddaDifficulty--;
+                DEBUG_LOG("DDA: Difficulty decreased to %d (consecutive struggles)", ddaDifficulty);
+            }
+        }
+    }
+
+    //2. Update checkpoints for next unvisited room
+    int nextRoom = ddaFurthestRoomReached + 1;
+    if (nextRoom < DDA_MAX_ROOMS && ddaRoomHasDDA[nextRoom] && !ddaRoomCheckpointsLocked[nextRoom])
+    {
+        //Set checkpoints based on current difficulty for next room
+        int level = ddaRoomLevel[nextRoom];
+        int checkpointsToAdd = 0;
+
+        if (level == 1)
+        {
+            if (ddaDifficulty <= 4) checkpointsToAdd = 1;
+        }
+        else if (level == 2)
+        {
+            if (ddaDifficulty <= 3) checkpointsToAdd = 2;
+            else if (ddaDifficulty <= 5) checkpointsToAdd = 1;
+        }
+
+        ddaAddCheckpoint1[nextRoom] = (checkpointsToAdd >= 1);
+        ddaAddCheckpoint2[nextRoom] = (checkpointsToAdd >= 2);
+    }
+}
+
+
 void Game::ddaOnPlayerDeath()
 {
-    //TELEMETRY: Always record deaths, even if DDA is disabled
+    //TELEMETRY: Always records deaths, even if DDA is disabled
     telemetryOnDeath(ddaCurrentRoom, roomx, roomy);
     
     if (!ddaEnabled) return;
@@ -8686,7 +8758,6 @@ void Game::ddaCheckStruggle()
         ddaStruggledThisRoom = true;
         ddaRoomState[ddaCurrentRoom].struggled = true;
     }
-
 }
 
 void Game::ddaOnRoomEnter(int room)
@@ -8699,6 +8770,7 @@ void Game::ddaOnRoomEnter(int room)
     ddaRoomState[ddaCurrentRoom].timeSpentSeconds += (ddaGetTotalGameSeconds() - ddaRoomStartTime);
     ddaRoomState[ddaCurrentRoom].struggled = ddaStruggledThisRoom;
 
+    /*
     //Complete the previous room only if moving forward
     if (room > ddaCurrentRoom)
     {        
@@ -8739,6 +8811,75 @@ void Game::ddaOnRoomEnter(int room)
         ddaDeathRecordCount = 0;
         ddaSameSpotDeaths = 0;
     }
+    */
+
+    bool isNewFurthestRoom = (room > ddaFurthestRoomReached);
+
+    //Handle room completion when moving forward
+    if (room > ddaCurrentRoom && ddaRoomState[ddaCurrentRoom].completed == false)
+    {
+        ddaRoomState[ddaCurrentRoom].completed = true;
+
+        if (ddaFirstDDARoom && ddaCurrentRoom == 8)
+        {
+            ddaFirstDDARoom = false;
+            DEBUG_LOG("DDA TRACKING START");
+            //Don't adjust difficulty, just mark as complete and continue
+        }
+        else if (ddaRoomHasDDA[ddaCurrentRoom])
+        {
+            //Track success for difficulty increase
+            if (!ddaStruggledThisRoom)
+            {
+                ddaConsecutiveStruggles = 0;
+
+                //Room 9 special case: immediate difficulty increase on success
+                if (ddaCurrentRoom == 9)
+                {
+                    ddaConsecutiveSuccesses = 0;
+                    ddaConsecutiveStruggles = 0;
+                }
+                else
+                {
+                    ddaConsecutiveSuccesses++;
+                    if (ddaConsecutiveSuccesses >= 2 && ddaDifficulty < 7)
+                    {
+                        ddaDifficulty++;
+                        ddaConsecutiveSuccesses = 0;
+                        DEBUG_LOG("DDA: Difficulty increased to %d (consecutive successes)", ddaDifficulty);
+                    }
+                }
+            }
+        }
+
+        if (isNewFurthestRoom)
+        {
+            telemetryOnRoomExit(ddaCurrentRoom);
+        }
+    }
+
+    //Lock checkpoints for the room we're entering (if new)
+    if (isNewFurthestRoom)
+    {
+        ddaFurthestRoomReached = room;
+        ddaRoomCheckpointsLocked[room] = true;  //Lock - never change these flags again
+        telemetryOnRoomEnter(room);
+
+        ddaDeathsInRoom = 0;
+        ddaRoomStartTime = ddaGetTotalGameSeconds();
+        ddaStruggledThisRoom = false;
+        ddaDeathRecordCount = 0;
+        ddaSameSpotDeaths = 0;
+    }
+    else
+    {
+        //Revisiting
+        ddaDeathsInRoom = ddaRoomState[room].deaths;
+        ddaRoomStartTime = ddaGetTotalGameSeconds();
+        ddaStruggledThisRoom = ddaRoomState[room].struggled;
+        ddaDeathRecordCount = 0;
+        ddaSameSpotDeaths = 0;
+    }
 
     //Switch to new room
     ddaCurrentRoom = room;
@@ -8751,6 +8892,7 @@ void Game::ddaOnRoomEnter(int room)
         isNewFurthestRoom ? "YES" : "NO");
 }
 
+/*
 void Game::ddaOnRoomComplete(int room)
 {
     //Don't adjust if DDA disabled for this room
@@ -8772,16 +8914,19 @@ void Game::ddaOnRoomComplete(int room)
     {
         ddaStruggledLastRoom = ddaStruggledThisRoom;
         ddaFirstDDARoom = false;
+        DEBUG_LOG("DDA START");
         return;
     }
 
     //Evaluate difficulty adjustment
-    ddaEvaluateAndAdjust();
+    //ddaEvaluateAndAdjust();
 
     //Update struggle tracking for next room
     ddaStruggledLastRoom = ddaStruggledThisRoom;
 }
+*/
 
+/*
 void Game::ddaEvaluateAndAdjust()
 {    
     //Put return here for now for testing, ignore.
@@ -8818,7 +8963,7 @@ void Game::ddaEvaluateAndAdjust()
         }
         //If struggled last time but succeeded now, don't change, they're learning so let them
     }
-}
+} */
 
 void Game::ddaUpdateCheckpoints()
 {

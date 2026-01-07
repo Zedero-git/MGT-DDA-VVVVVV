@@ -981,12 +981,14 @@ static enum LoopCode loop_begin(void)
     if (game.gamestate == GAMEMODE)
     {
         //DDA: check for time-based struggling
-        game.ddaCheckStruggle();
+        //game.ddaCheckStruggle();
         
         //TELEMETRY: track key inputs
         game.telemetryUpdateKeyTracking();
 
-        game.ddaUpdateCheckpoints();
+        //game.ddaUpdateCheckpoints();
+
+        game.ddaUpdate();
     }
 
     // Update network per frame.
