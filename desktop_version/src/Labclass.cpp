@@ -198,7 +198,25 @@ const short* labclass::loadlevel(int rx, int ry)
         };
 
         obj.createentity(96, 124, 11, 120);  // (horizontal gravity line)
-        obj.createentity(248, 48, 10, 0, 251490);  // (savepoint)
+
+        if (!game.ddaEnabled)
+        {
+            //CONTROL GROUP
+            obj.createentity(248, 48, 10, 0, 251490);  // (savepoint)
+        }
+        else
+        {
+            //EXPERIMENT GROUP
+            if (game.ddaAddCheckpoint1[25])
+            {
+                obj.createentity(248, 48, 10, 0, 251490);  // (savepoint)
+            }
+            if (game.ddaAddCheckpoint2[25])
+            {
+                obj.createentity(42, 184, 10, 1, 251491);  // (savepoint)
+            }
+        }
+
         rcol = 4;
 
         roomname = "Rascasse";
@@ -290,7 +308,20 @@ const short* labclass::loadlevel(int rx, int ry)
         289,411,0,0,0,0,0,0,0,0,0,409,289,289,289,289,289,289,289,289,289,289,289,289,289,289,289,289,289,289,289,289,289,289,289,289,289,289,289,289,
         };
 
-        obj.createentity(280, 136, 10, 1, 252480);  // (savepoint)
+        if (!game.ddaEnabled)
+        {
+            //CONTROL GROUP
+            obj.createentity(280, 136, 10, 1, 252480);  // (savepoint)
+        }
+        else
+        {
+            //EXPERIMENT GROUP
+            if (game.ddaAddCheckpoint1[27])
+            {
+                obj.createentity(280, 136, 10, 1, 252480);  // (savepoint)
+            }
+        }
+
         obj.createentity(48, 52, 11, 104);  // (horizontal gravity line)
         obj.createentity(192, 52, 11, 104);  // (horizontal gravity line)
         obj.createentity(152, 196, 11, 40);  // (horizontal gravity line)
@@ -514,10 +545,28 @@ const short* labclass::loadlevel(int rx, int ry)
         286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,
         };
 
-        obj.createentity(264, 104, 10, 1, 253510);  // (savepoint)
         obj.createentity(131, 120, 12, 96);  // (vertical gravity line)
         obj.createentity(187, 16, 12, 96);  // (vertical gravity line)
-        obj.createentity(40, 112, 10, 0, 253511);  // (savepoint)
+
+        if (!game.ddaEnabled)
+        {
+            //CONTROL GROUP
+            obj.createentity(264, 104, 10, 1, 253510);  // (savepoint)
+            obj.createentity(40, 112, 10, 0, 253511);  // (savepoint)
+        }
+        else
+        {
+            //EXPERIMENT GROUP
+            if (game.ddaAddCheckpoint1[31])
+            {
+                obj.createentity(264, 104, 10, 1, 253510);  // (savepoint)
+            }
+            if (game.ddaAddCheckpoint2[31])
+            {
+                obj.createentity(40, 112, 10, 0, 253511);  // (savepoint)
+            }
+        }
+
         rcol = 2;
         roomname = "They Call Him Flipper";
         result = contents;
@@ -560,7 +609,24 @@ const short* labclass::loadlevel(int rx, int ry)
         292,292,292,292,292,292,292,292,292,292,292,292,292,292,292,292,292,292,292,292,292,292,292,292,292,292,292,292,292,292,292,292,292,292,292,292,292,292,292,292,
         };
 
-        obj.createentity(24, 184, 10, 1, 253520);  // (savepoint)
+        if (!game.ddaEnabled)
+        {
+            //CONTROL GROUP
+            obj.createentity(24, 184, 10, 1, 253520);  // (savepoint)
+        }
+        else
+        {
+            //EXPERIMENT GROUP
+            if (game.ddaAddCheckpoint1[32])
+            {
+                obj.createentity(24, 184, 10, 1, 253520);  // (savepoint)
+            }
+            if (game.ddaAddCheckpoint2[32])
+            {
+                obj.createentity(284, 128, 10, 0, 253521);  // (savepoint)
+            }
+        }
+
         obj.createentity(64, 164, 11, 200);  // (horizontal gravity line)
         rcol = 4;
         roomname = "Three's a Crowd";
@@ -746,7 +812,21 @@ const short* labclass::loadlevel(int rx, int ry)
         obj.createentity(32, 28, 11, 296);  // (horizontal gravity line)
         obj.createentity(32, 196, 11, 112);  // (horizontal gravity line)
         obj.createentity(128, 100, 11, 160);  // (horizontal gravity line)
-        obj.createentity(88, 112, 10, 0, 250510);  // (savepoint)
+
+        if (!game.ddaEnabled)
+        {
+            //CONTROL GROUP
+            obj.createentity(88, 112, 10, 0, 250510);  // (savepoint)
+        }
+        else
+        {
+            //EXPERIMENT GROUP
+            if (game.ddaAddCheckpoint1[36])
+            {
+                obj.createentity(88, 112, 10, 0, 250510);  // (savepoint)
+            }
+        }
+
         roomname = "Brought to you by the letter G";
         rcol = 1;
         result = contents;
@@ -969,6 +1049,20 @@ const short* labclass::loadlevel(int rx, int ry)
         obj.createentity(-8, 28, 11, 80);  // (horizontal gravity line)
         obj.createentity(112, 28, 11, 96);  // (horizontal gravity line)
         obj.createentity(248, 28, 11, 80);  // (horizontal gravity line)
+
+        if (!game.ddaEnabled)
+        {
+            //CONTROL GROUP
+        }
+        else
+        {
+            //EXPERIMENT GROUP
+            if (game.ddaAddCheckpoint2[41])
+            {
+                obj.createentity(30, 29, 10, 1, 250540);  // (savepoint)
+            }
+        }
+
         rcol=1;
 
         roomname = "Barani, Barani";
@@ -1016,6 +1110,7 @@ const short* labclass::loadlevel(int rx, int ry)
         obj.createentity(-8, 180, 11, 80);  // (horizontal gravity line)
         obj.createentity(112, 180, 11, 96);  // (horizontal gravity line)
         obj.createentity(248, 180, 11, 80);  // (horizontal gravity line)
+
         rcol=2;
 
         roomname = "Safety Dance";
@@ -1272,7 +1367,16 @@ const short* labclass::loadlevel(int rx, int ry)
         };
 
         //obj.createentity(32, 64, 9, 10);  // (shiny trinket)
-        obj.createentity(255, 72, 10, 1, 252550);  // (savepoint)
+        if (!game.ddaEnabled)
+        {
+            //CONTROL GROUP
+            obj.createentity(255, 72, 10, 1, 252550);  // (savepoint)
+        }
+        else
+        {
+            //EXPERIMENT GROUP
+            obj.createentity(255, 72, 10, 1, 252550);  // (savepoint)
+        }
         rcol = 4;
 
         //roomname = "The Tantalizing Trinket";
@@ -1493,8 +1597,26 @@ const short* labclass::loadlevel(int rx, int ry)
 
         obj.createentity(-8, 60, 11, 120);  // (horizontal gravity line)
         obj.createentity(-8, 172, 11, 40);  // (horizontal gravity line)
-        obj.createentity(264, 72, 10, 0, 254530);  // (savepoint)
-        obj.createentity(40, 144, 10, 1, 254531);  // (savepoint)
+
+        if (!game.ddaEnabled)
+        {
+            //CONTROL GROUP
+            obj.createentity(264, 72, 10, 0, 254530);  // (savepoint)
+            obj.createentity(40, 144, 10, 1, 254531);  // (savepoint)
+        }
+        else
+        {
+            //EXPERIMENT GROUP
+            if (game.ddaAddCheckpoint1[50])
+            {
+                obj.createentity(40, 144, 10, 1, 254531);  // (savepoint)
+            }
+            if (game.ddaAddCheckpoint2[50])
+            {
+                obj.createentity(264, 72, 10, 0, 254530);  // (savepoint)
+            }
+        }
+
         obj.createentity(160, 60, 11, 48);  // (horizontal gravity line)
         obj.createentity(288, 60, 11, 40);  // (horizontal gravity line)
         obj.createentity(112, 172, 11, 48);  // (horizontal gravity line)
@@ -1841,7 +1963,20 @@ const short* labclass::loadlevel(int rx, int ry)
         obj.createentity(187, 48, 12, 88);  // (vertical gravity line)
         obj.createentity(235, 48, 12, 48);  // (vertical gravity line)
         obj.createentity(283, 48, 12, 152);  // (vertical gravity line)
-        obj.createentity(8, 48, 10, 0, 255510);  // (savepoint)
+
+        if (!game.ddaEnabled)
+        {
+            //CONTROL GROUP
+            obj.createentity(8, 48, 10, 0, 255510);  // (savepoint)
+        }
+        else
+        {
+            //EXPERIMENT GROUP
+            if (game.ddaAddCheckpoint1[57])
+            {
+                obj.createentity(8, 48, 10, 0, 255510);  // (savepoint)
+            }
+        }
         rcol=5;
 
         roomname = "A Difficult Chord";
@@ -1974,6 +2109,19 @@ const short* labclass::loadlevel(int rx, int ry)
         286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,408,0,0,0,0,0,406,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,
         286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,408,0,0,0,0,0,406,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,
         };
+
+        if (!game.ddaEnabled)
+        {
+            //CONTROL GROUP
+        }
+        else
+        {
+            //EXPERIMENT GROUP
+            if (game.ddaAddCheckpoint2[60])
+            {
+                obj.createentity(155, 72, 10, 1, 257520);  // (savepoint)
+            }
+        }
         rcol = 2;
 
         roomname = "Diode";

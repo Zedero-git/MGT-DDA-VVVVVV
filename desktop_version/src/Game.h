@@ -206,6 +206,7 @@ public:
         int deaths;                           //Total deaths in this room
         int timeSpentSeconds;                 //Accumulated time in this room
         bool struggled;                       //Has player struggled in this room?
+        bool completed;
     };
 
     //DDA System Variables
@@ -220,6 +221,7 @@ public:
     //Room tracking
     int ddaDeathsInRoom;                      //Deaths in current room
     int ddaRoomStartTime;                     //Timestamp when room was entered (in total seconds)
+    int ddaSameSpotDeaths;                    //Count of deaths in same spot, updated on death, for same death location comparison
     bool ddaStruggledLastRoom;                //Did player struggle in previous room?
     bool ddaStruggledThisRoom;                //Is player currently struggling?
     int ddaSuccessStreak;
@@ -245,15 +247,17 @@ public:
     DDARoomState ddaRoomState[DDA_MAX_ROOMS]; //Room DDA tracking
 
     //DDA System Functions
-    void ddaInit();                              //Initialize DDA system
-    void ddaReset();                             //Reset for new game
-    void ddaOnPlayerDeath();                     //Called when player dies
-    void ddaOnRoomEnter(int room);         //Called when entering new room
-    void ddaOnRoomComplete(int room);      //Called when completing a room
-    void ddaEvaluateAndAdjust();                 //Evaluate struggle and adjust difficulty
-    void ddaAddCheckpointsForRoom(int room);  //Determine checkpoints for a room
-    bool ddaIsStrugglingInRoom();             //Check if player is currently struggling
-    int ddaGetTotalGameSeconds();                //Get current game time in seconds
+    void ddaInit();                               //Initialize DDA system
+    void ddaReset();                              //Reset for new game
+    void ddaOnPlayerDeath();                      //Called when player dies
+    void ddaOnRoomEnter(int room);                //Called when entering new room
+    void ddaOnRoomComplete(int room);             //Called when completing a room
+    void ddaEvaluateAndAdjust();                  //Evaluate struggle and adjust difficulty
+    void ddaCheckStruggle();                      //Check for struggling
+    void ddaAddCheckpointsForRoom(int room);      //Determine checkpoints for a room
+    void ddaUpdateCheckpoints();                  //Update checkpoints
+
+    int ddaGetTotalGameSeconds();                 //Get current game time in seconds
     int ddaGetRoomIndex(const std::string& name); //Map room name to index (0-63)
     //DDA RESEARCH - STOP
 

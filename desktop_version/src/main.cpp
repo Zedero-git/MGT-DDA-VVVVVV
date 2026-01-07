@@ -978,10 +978,15 @@ static enum LoopCode loop_begin(void)
         key.Poll();
     }
 
-    //TELEMETRY: track key inputs
     if (game.gamestate == GAMEMODE)
     {
+        //DDA: check for time-based struggling
+        game.ddaCheckStruggle();
+        
+        //TELEMETRY: track key inputs
         game.telemetryUpdateKeyTracking();
+
+        game.ddaUpdateCheckpoints();
     }
 
     // Update network per frame.

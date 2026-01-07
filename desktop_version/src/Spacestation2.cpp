@@ -2403,7 +2403,20 @@ const short* spacestation2class::loadlevel(int rx, int ry)
         310,310,310,310,432,0,0,0,0,0,812,692,430,310,310,310,310,310,310,310,310,310,310,310,310,310,310,310,432,0,0,0,0,0,0,430,310,310,310,310,
         };
 
-        obj.createentity(56, 144, 10, 0, 443520);  // (savepoint)
+        if (!game.ddaEnabled)
+        {
+            //CONTROL GROUP
+            obj.createentity(56, 144, 10, 0, 443520);  // (savepoint)
+        }
+        else
+        {
+            //EXPERIMENT GROUP
+            if (game.ddaAddCheckpoint1[14])
+            {
+                obj.createentity(56, 144, 10, 0, 443520);  // (savepoint)
+            }
+        }
+        
         obj.createentity(152, 80, 10, 1, 443521);  // (savepoint)
         roomname = "The Sensible Room";
         result = contents;
@@ -2491,6 +2504,8 @@ const short* spacestation2class::loadlevel(int rx, int ry)
 
         obj.createentity(280, 192, 10, 1, 443500);  // (savepoint)
         obj.createentity(64, 80, 10, 1, 443501);  // (savepoint)
+        
+        //DDA RESEARCH: Perma checkpoint here
 
         if(!game.nocutscenes)
         {
@@ -2848,7 +2863,20 @@ const short* spacestation2class::loadlevel(int rx, int ry)
         };
 
         obj.createentity(40, 24, 10, 0, 442530);  // (savepoint)
-        obj.createentity(264, 24, 10, 0, 442531);  // (savepoint)
+        
+        if (!game.ddaEnabled)
+        {
+            //CONTROL GROUP
+            obj.createentity(264, 24, 10, 0, 442531);  // (savepoint)
+        }
+        else
+        {
+            //EXPERIMENT GROUP
+            if (game.ddaAddCheckpoint1[16])
+            {
+                obj.createentity(264, 24, 10, 0, 442531);  // (savepoint)
+            }
+        }
 
         roomname = "Driller";
         result = contents;
@@ -3037,8 +3065,21 @@ const short* spacestation2class::loadlevel(int rx, int ry)
         495,495,495,495,495,617,0,0,0,0,0,0,615,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,495,
         };
 
-        obj.createentity(288, 160, 10, 1, 442500);  // (savepoint)
 
+        if (!game.ddaEnabled)
+        {
+            //CONTROL GROUP
+            obj.createentity(288, 160, 10, 1, 442500);  // (savepoint)
+        }
+        else
+        {
+            //EXPERIMENT GROUP
+            if (game.ddaAddCheckpoint1[11])
+            {
+                obj.createentity(288, 160, 10, 1, 442500);  // (savepoint)
+            }
+
+        }
 
         obj.createentity(135, 75, 2, 0, 3, 100, 70, 320, 160);
         obj.createentity(185, 110, 2, 0, 3, 100, 70, 320, 160);
@@ -3145,13 +3186,13 @@ const short* spacestation2class::loadlevel(int rx, int ry)
 
         if (!game.ddaEnabled)
         {
-            // CONTROL GROUP
+            //CONTROL GROUP
             obj.createentity(64, 80, 10, 1, 441501);  // (savepoint)
             obj.createentity(64, 136, 10, 0, 441502);  // (savepoint)
         }
         else
         {
-            // EXPERIMENT GROUP:
+            //EXPERIMENT GROUP
             if (game.ddaAddCheckpoint1[10])
             {
                 obj.createentity(64, 80, 10, 1, 441501); // (savepoint)
