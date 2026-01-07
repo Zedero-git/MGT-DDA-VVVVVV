@@ -8504,7 +8504,6 @@ void Game::ddaReset()
     }
 }
 
-
 void Game::ddaUpdate()
 {
     if (!ddaEnabled) return;
@@ -8575,11 +8574,20 @@ void Game::ddaUpdate()
     }
 }
 
-
 void Game::ddaOnPlayerDeath()
 {
+    //Get player position
+    int playerX = 0;
+    int playerY = 0;
+    int i = obj.getplayer();
+    if (INBOUNDS_VEC(i, obj.entities))
+    {
+        playerX = obj.entities[i].xp;
+        playerY = obj.entities[i].yp;
+    }
+    
     //TELEMETRY: Always records deaths, even if DDA is disabled
-    telemetryOnDeath(ddaCurrentRoom, roomx, roomy);
+    telemetryOnDeath(ddaCurrentRoom, playerX, playerY);
     
     if (!ddaEnabled) return;
     if (!ddaRoomHasDDA[ddaCurrentRoom]) return;
@@ -8589,8 +8597,8 @@ void Game::ddaOnPlayerDeath()
 
     if (ddaDeathRecordCount < DDA_MAX_DEATH_RECORDS)
     {
-        ddaDeathRecords[ddaDeathRecordCount].x = roomx;
-        ddaDeathRecords[ddaDeathRecordCount].y = roomy;
+        ddaDeathRecords[ddaDeathRecordCount].x = playerX;
+        ddaDeathRecords[ddaDeathRecordCount].y = playerY;
         ddaDeathRecords[ddaDeathRecordCount].room = ddaCurrentRoom;
         ddaDeathRecords[ddaDeathRecordCount].deathNumber = ddaDeathsInRoom;
         ddaDeathRecords[ddaDeathRecordCount].timestamp = ddaGetTotalGameSeconds();
@@ -8603,8 +8611,8 @@ void Game::ddaOnPlayerDeath()
         {
             ddaDeathRecords[i] = ddaDeathRecords[i + 1];
         }
-        ddaDeathRecords[DDA_MAX_DEATH_RECORDS - 1].x = roomx;
-        ddaDeathRecords[DDA_MAX_DEATH_RECORDS - 1].y = roomy;
+        ddaDeathRecords[DDA_MAX_DEATH_RECORDS - 1].x = playerX;
+        ddaDeathRecords[DDA_MAX_DEATH_RECORDS - 1].y = playerY;
         ddaDeathRecords[DDA_MAX_DEATH_RECORDS - 1].room = ddaCurrentRoom;
         ddaDeathRecords[DDA_MAX_DEATH_RECORDS - 1].deathNumber = ddaDeathsInRoom;
         ddaDeathRecords[DDA_MAX_DEATH_RECORDS - 1].timestamp = ddaGetTotalGameSeconds();
@@ -8612,88 +8620,24 @@ void Game::ddaOnPlayerDeath()
 
     //Determine death locations
     int sameLocationDeaths = 0;
-    for (int i = 0; i < ddaDeathRecordCount; i++)
+    for (int j = 0; j < ddaDeathRecordCount; j++)
     {
-        if (ddaDeathRecords[i].room == ddaCurrentRoom &&
-            ddaDeathRecords[i].x == roomx &&
-            ddaDeathRecords[i].y == roomy)
+        if (ddaDeathRecords[j].room == ddaCurrentRoom)
         {
-            sameLocationDeaths++;
+            int dx = ddaDeathRecords[j].x - playerX;
+            int dy = ddaDeathRecords[j].y - playerY;
+            if (dx < 0) dx = -dx;
+            if (dy < 0) dy = -dy;
+
+            if (dx <= 10 && dy <= 10)
+            {
+                sameLocationDeaths++;
+            }
         }
     }
     ddaSameSpotDeaths = sameLocationDeaths;
-
-    //Check if now struggling
-    //bool wasStruggling = ddaStruggledThisRoom;
-    //ddaStruggledThisRoom = ddaIsStrugglingInRoom();
-    //ddaRoomState[ddaCurrentRoom].struggled = ddaStruggledThisRoom;
-
-    //if (ddaStruggledThisRoom && ddaCurrentRoom + 1 < DDA_MAX_ROOMS)
-    //{
-    //    int nextRoom = ddaCurrentRoom + 1;
-
-    //    //Only spawn if player hasn't reached that room yet
-    //    if (nextRoom > ddaFurthestRoomReached)
-    //    {
-    //        ddaAddCheckpointsForRoom(nextRoom);
-    //    }
-    //}
+    DEBUG_LOG("DDA: Death at (%d, %d) | Same spot deaths: %d", playerX, playerY, ddaSameSpotDeaths);
 }
-
-/*
-bool Game::ddaIsStrugglingInRoom()
-{
-    if (!ddaRoomHasDDA[ddaCurrentRoom])
-    {
-        return false;
-    }
-
-    int timeInRoom = (ddaGetTotalGameSeconds() - ddaRoomStartTime) + ddaRoomState[ddaCurrentRoom].timeSpentSeconds;
-    bool deathThresholdExceeded = (ddaDeathsInRoom >= ddaDeathThreshold[ddaCurrentRoom]);
-    bool shortTimeExceeded = (timeInRoom >= ddaShortTimeThreshold[ddaCurrentRoom]);
-    //bool longTimeExceeded = (timeInRoom >= ddaLongTimeThreshold[ddaCurrentRoom]); => is handled seperately so it is not called on death only
-
-    //Count deaths in the same spot (current room coordinates)
-    int sameLocationDeaths = 0;
-    for (int i = 0; i < ddaDeathRecordCount; i++)
-    {
-        if (ddaDeathRecords[i].room == ddaCurrentRoom &&
-            ddaDeathRecords[i].x == roomx &&
-            ddaDeathRecords[i].y == roomy)
-        {
-            sameLocationDeaths++;
-        }
-    }
-    bool diedThreeTimesInSameSpot = (sameLocationDeaths >= 3);
-
-    //Player is struggling if ANY of these conditions is true:
-    //1. Death threshold AND Short time threshold both exceeded
-    if (deathThresholdExceeded && shortTimeExceeded)
-    {
-        return true;
-    }
-
-    //2. Long time threshold exceeded => checked in seperate method
-    //if (longTimeExceeded)
-    {
-        return true;
-    //}
-
-    //3. Died 3+ times in same spot AND Short time threshold exceeded
-    if (diedThreeTimesInSameSpot && shortTimeExceeded)
-    {
-        return true;
-    }
-
-    // 4. Died 3+ times in same spot AND Death threshold exceeded
-    if (diedThreeTimesInSameSpot && deathThresholdExceeded)
-    {
-        return true;
-    }
-
-    return false;
-  }
-  */
 
 void Game::ddaCheckStruggle()
 {
@@ -8769,49 +8713,6 @@ void Game::ddaOnRoomEnter(int room)
     ddaRoomState[ddaCurrentRoom].deaths = ddaDeathsInRoom;
     ddaRoomState[ddaCurrentRoom].timeSpentSeconds += (ddaGetTotalGameSeconds() - ddaRoomStartTime);
     ddaRoomState[ddaCurrentRoom].struggled = ddaStruggledThisRoom;
-
-    /*
-    //Complete the previous room only if moving forward
-    if (room > ddaCurrentRoom)
-    {        
-        if (room > ddaFurthestRoomReached)
-        {
-            //TELEMETRY: Record time spent in previous room
-            telemetryOnRoomExit(ddaCurrentRoom);
-        }
-        ddaOnRoomComplete(ddaCurrentRoom);
-    }
-
-    //Update furthest room reached
-    bool isNewFurthestRoom = (room > ddaFurthestRoomReached);
-
-    //Restore or initialize room state
-    if (isNewFurthestRoom)
-    {
-        ddaFurthestRoomReached = room;
-        //ddaAddCheckpointsForRoom(room);
-        //TELEMETRY: Record first visit (records difficulty on entry)
-        telemetryOnRoomEnter(room);
-        
-        //New room, so reset
-        ddaDeathsInRoom = 0;
-        ddaRoomStartTime = ddaGetTotalGameSeconds();
-        ddaStruggledThisRoom = false;
-        ddaDeathRecordCount = 0;
-        ddaSameSpotDeaths = 0;
-    }
-    else
-    {
-        //Revisiting a room, so restore previous state
-        ddaDeathsInRoom = ddaRoomState[room].deaths;
-        ddaRoomStartTime = ddaGetTotalGameSeconds();
-        ddaStruggledThisRoom = ddaRoomState[room].struggled;
-        //Death records are not restored (they're for same-spot detection, 
-        //which should reset on room change to prevent stale data)
-        ddaDeathRecordCount = 0;
-        ddaSameSpotDeaths = 0;
-    }
-    */
 
     bool isNewFurthestRoom = (room > ddaFurthestRoomReached);
 
@@ -8891,79 +8792,6 @@ void Game::ddaOnRoomEnter(int room)
         ddaDeathsInRoom,
         isNewFurthestRoom ? "YES" : "NO");
 }
-
-/*
-void Game::ddaOnRoomComplete(int room)
-{
-    //Don't adjust if DDA disabled for this room
-    if (!ddaRoomHasDDA[room])
-    {
-        ddaStruggledLastRoom = false;
-        return;
-    }
-
-    //Check if this room has been completed before
-    if (ddaRoomState[room].completed)
-    {
-        return;
-    }
-    ddaRoomState[room].completed = true;
-
-    //First check if this is room 9 (first DDA room), we don't want successes to be checked during tutorial
-    if (ddaFirstDDARoom)
-    {
-        ddaStruggledLastRoom = ddaStruggledThisRoom;
-        ddaFirstDDARoom = false;
-        DEBUG_LOG("DDA START");
-        return;
-    }
-
-    //Evaluate difficulty adjustment
-    //ddaEvaluateAndAdjust();
-
-    //Update struggle tracking for next room
-    ddaStruggledLastRoom = ddaStruggledThisRoom;
-}
-*/
-
-/*
-void Game::ddaEvaluateAndAdjust()
-{    
-    //Put return here for now for testing, ignore.
-    //return;
-    
-    if (ddaStruggledThisRoom)
-    {
-        ddaSuccessStreak = 0;
-        
-        //Player struggled this room
-        if (ddaStruggledLastRoom)
-        {
-            //Struggled twice in a row -> decrease difficulty
-            if (ddaDifficulty > 1)
-            {
-                ddaDifficulty--;
-            }
-        }
-        //If only struggled once, don't change (give player time to adapt)
-    }
-    else
-    {
-        ddaSuccessStreak++;
-        
-        //Player succeeded (didn't struggle)
-        if (ddaSuccessStreak >= 2)
-        {
-            //Succeeded twice in a row -> increase difficulty
-            if (ddaDifficulty < 7)
-            {
-                ddaDifficulty++;
-            }
-            ddaSuccessStreak = 0; //Reset streak so player needs to succeed twice in a row again.
-        }
-        //If struggled last time but succeeded now, don't change, they're learning so let them
-    }
-} */
 
 void Game::ddaUpdateCheckpoints()
 {
