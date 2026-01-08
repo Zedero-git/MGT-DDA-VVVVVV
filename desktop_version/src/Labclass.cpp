@@ -316,7 +316,7 @@ const short* labclass::loadlevel(int rx, int ry)
         else
         {
             //EXPERIMENT GROUP
-            if (game.ddaAddCheckpoint1[27])
+            if (game.ddaAddCheckpoint2[27])
             {
                 obj.createentity(280, 136, 10, 1, 252480);  // (savepoint)
             }
@@ -559,11 +559,11 @@ const short* labclass::loadlevel(int rx, int ry)
             //EXPERIMENT GROUP
             if (game.ddaAddCheckpoint1[31])
             {
-                obj.createentity(264, 104, 10, 1, 253510);  // (savepoint)
+                obj.createentity(40, 112, 10, 0, 253511);  // (savepoint)
             }
             if (game.ddaAddCheckpoint2[31])
             {
-                obj.createentity(40, 112, 10, 0, 253511);  // (savepoint)
+                obj.createentity(264, 104, 10, 1, 253510);  // (savepoint)
             }
         }
 
@@ -1367,16 +1367,9 @@ const short* labclass::loadlevel(int rx, int ry)
         };
 
         //obj.createentity(32, 64, 9, 10);  // (shiny trinket)
-        if (!game.ddaEnabled)
-        {
-            //CONTROL GROUP
-            obj.createentity(255, 72, 10, 1, 252550);  // (savepoint)
-        }
-        else
-        {
-            //EXPERIMENT GROUP
-            obj.createentity(255, 72, 10, 1, 252550);  // (savepoint)
-        }
+        
+        obj.createentity(255, 72, 10, 1, 252550);  // (savepoint)
+
         rcol = 4;
 
         //roomname = "The Tantalizing Trinket";
@@ -2110,18 +2103,21 @@ const short* labclass::loadlevel(int rx, int ry)
         286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,408,0,0,0,0,0,406,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,286,
         };
 
-        if (!game.ddaEnabled)
-        {
-            //CONTROL GROUP
-        }
-        else
-        {
-            //EXPERIMENT GROUP
-            if (game.ddaAddCheckpoint2[60])
-            {
-                obj.createentity(155, 72, 10, 1, 257520);  // (savepoint)
-            }
-        }
+        //if (!game.ddaEnabled)
+        //{
+        //    //CONTROL GROUP
+        //}
+        //else
+        //{
+        //    //EXPERIMENT GROUP
+        //    if (game.ddaAddCheckpoint1[60])
+        //    {
+        //    }
+        //    if (game.ddaAddCheckpoint2[60])
+        //    {
+        //        obj.createentity(156, 72, 10, 1, 257520);  // (savepoint)
+        //    }
+        //}
         rcol = 2;
 
         roomname = "Diode";

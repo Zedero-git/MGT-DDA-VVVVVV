@@ -3310,8 +3310,7 @@ static void mapmenuactionpress(const bool version2_2)
         game.savetrinkets = game.trinkets();
 
         //DDA RESEARCH: Disable creating new quicksaves
-        
-        bool enableQuicksaving = true;
+        bool enableQuicksaving = false;
         if (enableQuicksaving)
         {
             bool success;

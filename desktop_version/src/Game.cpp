@@ -8082,7 +8082,7 @@ int Game::ddaGetTotalGameSeconds()
 
 void Game::ddaInit()
 {
-    // Change to false for control group, true for experiment group
+    //Change to false for control group, true for experiment group
     ddaEnabled = true;
 
     DEBUG_LOG("DDA: System initialized, ddaEnabled = %s", ddaEnabled ? "true" : "false");
@@ -8127,162 +8127,158 @@ void Game::ddaInit()
     //Room 9: Gantry and Dolly
     ddaRoomLevel[9] = 1;
     ddaDeathThreshold[9] = 4;
-    ddaShortTimeThreshold[9] = 30;
-    ddaLongTimeThreshold[9] = 60;
+    ddaShortTimeThreshold[9] = 20;
+    ddaLongTimeThreshold[9] = 35;
 
     //Room 10: The Yes Men
     ddaRoomLevel[10] = 1;
     ddaDeathThreshold[10] = 4;
     ddaShortTimeThreshold[10] = 20;
-    ddaLongTimeThreshold[10] = 40;
+    ddaLongTimeThreshold[10] = 35;
 
     //Room 11: Stop and Reflect
     ddaRoomLevel[11] = 1;
     ddaDeathThreshold[11] = 3;
     ddaShortTimeThreshold[11] = 20;
-    ddaLongTimeThreshold[11] = 40;
+    ddaLongTimeThreshold[11] = 35;
 
     //Room 12: V Stitch
     ddaRoomLevel[12] = 1;
     ddaDeathThreshold[12] = 1;
-    ddaShortTimeThreshold[12] = 15;
-    ddaLongTimeThreshold[12] = 30;
+    ddaShortTimeThreshold[12] = 5;
+    ddaLongTimeThreshold[12] = 15;
 
     //Room 13: B-B-B-Busted
     ddaRoomLevel[13] = 1;
     ddaDeathThreshold[13] = 2;
-    ddaShortTimeThreshold[13] = 12;
-    ddaLongTimeThreshold[13] = 25;
+    ddaShortTimeThreshold[13] = 1;
+    ddaLongTimeThreshold[13] = 10;
 
     //Room 14: The Sensible Room
     ddaRoomLevel[14] = 1;
     ddaDeathThreshold[14] = 1;
-    ddaShortTimeThreshold[14] = 10;
-    ddaLongTimeThreshold[14] = 30;
+    ddaShortTimeThreshold[14] = 5;
+    ddaLongTimeThreshold[14] = 15;
 
     //Room 15: Boo! Think Fast!
     ddaRoomLevel[15] = 1;
     ddaDeathThreshold[15] = 2;
-    ddaShortTimeThreshold[15] = 15;
-    ddaLongTimeThreshold[15] = 30;
+    ddaShortTimeThreshold[15] = 1;
+    ddaLongTimeThreshold[15] = 15;
 
     //Room 16: Driller
     ddaRoomLevel[16] = 1;
     ddaDeathThreshold[16] = 2;
-    ddaShortTimeThreshold[16] = 1;
-    ddaLongTimeThreshold[16] = 20;
+    ddaShortTimeThreshold[16] = 0;
+    ddaLongTimeThreshold[16] = 15;
 
     //Room 17: Exhaust Chute
     ddaRoomLevel[17] = 1;
     ddaDeathThreshold[17] = 2;
-    ddaShortTimeThreshold[17] = 1;
+    ddaShortTimeThreshold[17] = 0;
     ddaLongTimeThreshold[17] = 600;
 
     //Room 18: Sorrow
     ddaRoomLevel[18] = 1;
     ddaDeathThreshold[18] = 2;
-    ddaShortTimeThreshold[18] = 1;
-    ddaLongTimeThreshold[18] = 20;
+    ddaShortTimeThreshold[18] = 0;
+    ddaLongTimeThreshold[18] = 10;
 
     //Room 19: Quicksand
     ddaRoomLevel[19] = 1;
     ddaDeathThreshold[19] = 1;
-    ddaShortTimeThreshold[19] = 5;
-    ddaLongTimeThreshold[19] = 30;
+    ddaShortTimeThreshold[19] = 0;
+    ddaLongTimeThreshold[19] = 15;
 
     //Room 20: The Tomb of Mad Carew
     ddaRoomLevel[20] = 1;
     ddaDeathThreshold[20] = 2;
-    ddaShortTimeThreshold[20] = 12;
-    ddaLongTimeThreshold[20] = 30;
+    ddaShortTimeThreshold[20] = 10;
+    ddaLongTimeThreshold[20] = 20;
 
     //Room 21: Brass Sent Us Under The Top
     ddaRoomLevel[21] = 1;
     ddaDeathThreshold[21] = 3;
-    ddaShortTimeThreshold[21] = 20;
-    ddaLongTimeThreshold[21] = 40;
+    ddaShortTimeThreshold[21] = 10;
+    ddaLongTimeThreshold[21] = 20;
 
     //Room 22: A Wrinkle in Time
-    ddaRoomLevel[22] = 1;
-    ddaDeathThreshold[22] = 1;
-    ddaShortTimeThreshold[22] = 30;
-    ddaLongTimeThreshold[22] = 600;
+    ddaRoomHasDDA[22] = false;
+    ddaRoomLevel[22] = 0;
 
     //===========================================
     //LABORATORY (23-63): Level 2 DDA
     //===========================================
 
     //Room 23: Get Ready To Bounce
-    ddaRoomLevel[23] = 2;
-    ddaDeathThreshold[23] = 1;
-    ddaShortTimeThreshold[23] = 30;
-    ddaLongTimeThreshold[23] = 600;
+    ddaRoomHasDDA[23] = false;
+    ddaRoomLevel[23] = 0;
 
     //Room 24: It's Perfectly Safe
     ddaRoomLevel[24] = 2;
     ddaDeathThreshold[24] = 2;
-    ddaShortTimeThreshold[24] = 10;
-    ddaLongTimeThreshold[24] = 25;
+    ddaShortTimeThreshold[24] = 0;
+    ddaLongTimeThreshold[24] = 10;
 
     //Room 25: Rascasse
     ddaRoomLevel[25] = 2;
     ddaDeathThreshold[25] = 3;
-    ddaShortTimeThreshold[25] = 30;
-    ddaLongTimeThreshold[25] = 50;
+    ddaShortTimeThreshold[25] = 12;
+    ddaLongTimeThreshold[25] = 25;
 
     //Room 26: Keep Going
     ddaRoomLevel[26] = 2;
     ddaDeathThreshold[26] = 2;
-    ddaShortTimeThreshold[26] = 10;
-    ddaLongTimeThreshold[26] = 25;
+    ddaShortTimeThreshold[26] = 7;
+    ddaLongTimeThreshold[26] = 15;
 
     //Room 27: Single-slit Experiment
     ddaRoomLevel[27] = 2;
     ddaDeathThreshold[27] = 2;
-    ddaShortTimeThreshold[27] = 10;
-    ddaLongTimeThreshold[27] = 25;
+    ddaShortTimeThreshold[27] = 7;
+    ddaLongTimeThreshold[27] = 15;
 
     //Room 28: Don't Flip Out
     ddaRoomLevel[28] = 2;
     ddaDeathThreshold[28] = 1;
-    ddaShortTimeThreshold[28] = 10;
-    ddaLongTimeThreshold[28] = 30;
+    ddaShortTimeThreshold[28] = 0;
+    ddaLongTimeThreshold[28] = 15;
 
     //Room 29: Shuffled Hallway
     ddaRoomLevel[29] = 2;
     ddaDeathThreshold[29] = 2;
-    ddaShortTimeThreshold[29] = 10;
-    ddaLongTimeThreshold[29] = 25;
+    ddaShortTimeThreshold[29] = 5;
+    ddaLongTimeThreshold[29] = 15;
 
     //Room 30: Double-Slit Experiment
     ddaRoomLevel[30] = 2;
-    ddaDeathThreshold[30] = 2;
-    ddaShortTimeThreshold[30] = 10;
-    ddaLongTimeThreshold[30] = 25;
+    ddaDeathThreshold[30] = 1;
+    ddaShortTimeThreshold[30] = 5;
+    ddaLongTimeThreshold[30] = 15;
 
     //Room 31: They Call Him Flipper
     ddaRoomLevel[31] = 2;
-    ddaDeathThreshold[31] = 3;
-    ddaShortTimeThreshold[31] = 12;
-    ddaLongTimeThreshold[31] = 25;
+    ddaDeathThreshold[31] = 2;
+    ddaShortTimeThreshold[31] = 5;
+    ddaLongTimeThreshold[31] = 15;
 
     //Room 32: Three's a Crowd
     ddaRoomLevel[32] = 2;
     ddaDeathThreshold[32] = 3;
-    ddaShortTimeThreshold[32] = 20;
-    ddaLongTimeThreshold[32] = 40;
+    ddaShortTimeThreshold[32] = 12;
+    ddaLongTimeThreshold[32] = 25;
 
     //Room 33: Hitting the Apex
     ddaRoomLevel[33] = 2;
     ddaDeathThreshold[33] = 1;
-    ddaShortTimeThreshold[33] = 10;
-    ddaLongTimeThreshold[33] = 30;
+    ddaShortTimeThreshold[33] = 5;
+    ddaLongTimeThreshold[33] = 15;
 
     //Room 34: Square Root
     ddaRoomLevel[34] = 2;
     ddaDeathThreshold[34] = 2;
-    ddaShortTimeThreshold[34] = 5;
-    ddaLongTimeThreshold[34] = 30;
+    ddaShortTimeThreshold[34] = 7;
+    ddaLongTimeThreshold[34] = 20;
 
     //Room 35: Thorny Exchange
     ddaRoomLevel[35] = 2;
@@ -8293,27 +8289,10 @@ void Game::ddaInit()
     //Room 36: Brought to you by the letter G
     ddaRoomLevel[36] = 2;
     ddaDeathThreshold[36] = 2;
-    ddaShortTimeThreshold[36] = 15;
-    ddaLongTimeThreshold[36] = 30;
+    ddaShortTimeThreshold[36] = 12;
+    ddaLongTimeThreshold[36] = 25;
 
-    //Disabled DDA for these rooms since it's mostly bouncing
-    ////Room 37: Free Your Mind
-    //ddaRoomLevel[37] = 2;
-    //ddaDeathThreshold[37] = 1;
-    //ddaShortTimeThreshold[37] = 1;
-    //ddaLongTimeThreshold[37] = 600;
-
-    ////Room 38: I changed my mind, Thelma...
-    //ddaRoomLevel[38] = 2;
-    //ddaDeathThreshold[38] = 1;
-    //ddaShortTimeThreshold[38] = 1;
-    //ddaLongTimeThreshold[38] = 600;
-
-    ////Room 39: Indirect Jump Vector
-    //ddaRoomLevel[39] = 2;
-    //ddaDeathThreshold[39] = 1;
-    //ddaShortTimeThreshold[39] = 1;
-    //ddaLongTimeThreshold[39] = 600;
+    //Disabled DDA for rooms 37-39 since it's mostly bouncing
 
     //Room 37: Free Your Mind
     ddaRoomHasDDA[37] = false;
@@ -8330,62 +8309,56 @@ void Game::ddaInit()
     //Room 40: In a Single Bound
     ddaRoomLevel[40] = 2;
     ddaDeathThreshold[40] = 2;
-    ddaShortTimeThreshold[40] = 5;
+    ddaShortTimeThreshold[40] = 0;
     ddaLongTimeThreshold[40] = 600;
 
     //Room 41: Safety Dance
     ddaRoomLevel[41] = 2;
     ddaDeathThreshold[41] = 1;
-    ddaShortTimeThreshold[41] = 1;
+    ddaShortTimeThreshold[41] = 0;
     ddaLongTimeThreshold[41] = 600;
 
     //Room 42: Barani, Barani
     ddaRoomLevel[42] = 2;
     ddaDeathThreshold[42] = 2;
-    ddaShortTimeThreshold[42] = 1;
+    ddaShortTimeThreshold[42] = 0;
     ddaLongTimeThreshold[42] = 600;
 
+    //DDA disabled 43-45 again due to lack of challenge
+
     //Room 43: Exhausted?
-    ddaRoomLevel[43] = 2;
-    ddaDeathThreshold[43] = 1;
-    ddaShortTimeThreshold[43] = 1;
-    ddaLongTimeThreshold[43] = 600;
+    ddaRoomHasDDA[43] = false;
+    ddaRoomLevel[43] = 0;
 
     //Room 44: Heady Heights
-    ddaRoomLevel[44] = 2;
-    ddaDeathThreshold[44] = 1;
-    ddaShortTimeThreshold[44] = 1;
-    ddaLongTimeThreshold[44] = 600;
+    ddaRoomHasDDA[44] = false;
+    ddaRoomLevel[44] = 0;
 
     //Room 45: Entanglement Generator
-    ddaRoomLevel[45] = 2;
-    ddaDeathThreshold[45] = 1;
-    ddaShortTimeThreshold[45] = 1;
-    ddaLongTimeThreshold[45] = 600;
+    ddaRoomHasDDA[45] = false;
+    ddaRoomLevel[45] = 0;
 
     //Room 46: Here We Go Again
     ddaRoomLevel[46] = 2;
     ddaDeathThreshold[46] = 1;
-    ddaShortTimeThreshold[46] = 1;
-    ddaLongTimeThreshold[46] = 20;
+    ddaShortTimeThreshold[46] = 0;
+    ddaLongTimeThreshold[46] = 15;
 
     //Room 47: The Bernoulli Principle
     ddaRoomLevel[47] = 2;
-    ddaDeathThreshold[47] = 4;
-    ddaShortTimeThreshold[47] = 10;
-    ddaLongTimeThreshold[47] = 30;
+    ddaDeathThreshold[47] = 3;
+    ddaShortTimeThreshold[47] = 12;
+    ddaLongTimeThreshold[47] = 25;
+
+    //DDA disabled 48 & 49; no challenge
 
     //Room 48: Standing Wave
-    ddaRoomLevel[48] = 2;
-    ddaDeathThreshold[48] = 1;
-    ddaShortTimeThreshold[48] = 1;
-    ddaLongTimeThreshold[48] = 600;
+    ddaRoomHasDDA[48] = false;
+    ddaRoomLevel[48] = 0;
 
     //Room 49: Topsy Turvyism
-    ddaRoomLevel[49] = 2;
-    ddaDeathThreshold[49] = 1;
-    ddaShortTimeThreshold[49] = 30;
-    ddaLongTimeThreshold[49] = 600;
+    ddaRoomHasDDA[49] = false;
+    ddaRoomLevel[49] = 0;
 
     //Room 50: Spike Strip Deployed
     ddaRoomLevel[50] = 2;
@@ -8395,61 +8368,61 @@ void Game::ddaInit()
 
     //Room 51: Vibrating String Problem
     ddaRoomLevel[51] = 2;
-    ddaDeathThreshold[51] = 2;
-    ddaShortTimeThreshold[51] = 5;
+    ddaDeathThreshold[51] = 3;
+    ddaShortTimeThreshold[51] = 05;
     ddaLongTimeThreshold[51] = 20;
 
     //Room 52: Merge
-    ddaRoomLevel[52] = 2;
-    ddaDeathThreshold[52] = 1;
-    ddaShortTimeThreshold[52] = 1;
-    ddaLongTimeThreshold[52] = 600;
+    ddaRoomHasDDA[52] = false;
+    ddaRoomLevel[52] = 0;
 
     //Room 53: Kids His Age Bounce
     ddaRoomLevel[53] = 2;
     ddaDeathThreshold[53] = 2;
-    ddaShortTimeThreshold[53] = 1;
+    ddaShortTimeThreshold[53] = 0;
     ddaLongTimeThreshold[53] = 20;
 
     //Room 54: I'm Sorry
     ddaRoomLevel[54] = 2;
     ddaDeathThreshold[54] = 3;
-    ddaShortTimeThreshold[54] = 1;
+    ddaShortTimeThreshold[54] = 0;
     ddaLongTimeThreshold[54] = 20;
 
     //Room 55: Please Forgive Me!
     ddaRoomLevel[55] = 2;
-    ddaDeathThreshold[55] = 1;
-    ddaShortTimeThreshold[55] = 1;
+    ddaDeathThreshold[55] = 2;
+    ddaShortTimeThreshold[55] = 0;
     ddaLongTimeThreshold[55] = 20;
 
     //Room 56: Playing Foosball
     ddaRoomLevel[56] = 2;
     ddaDeathThreshold[56] = 1;
-    ddaShortTimeThreshold[56] = 5;
+    ddaShortTimeThreshold[56] = 0;
     ddaLongTimeThreshold[56] = 15;
 
     //Room 57: A Difficult Chord
     ddaRoomLevel[57] = 2;
-    ddaDeathThreshold[57] = 3;
+    ddaDeathThreshold[57] = 4;
     ddaShortTimeThreshold[57] = 15;
     ddaLongTimeThreshold[57] = 25;
 
     //Room 58: The Living Dead End
     ddaRoomLevel[58] = 2;
     ddaDeathThreshold[58] = 3;
-    ddaShortTimeThreshold[58] = 15;
+    ddaShortTimeThreshold[58] = 12;
     ddaLongTimeThreshold[58] = 25;
     
-    //Lab end: Don't need DDA
+    //Lab end: Don't need DDA, except for extra checkpoint in Diode
     
     //Room 59: AAAAAA
     ddaRoomHasDDA[59] = false;
     ddaRoomLevel[59] = 0;
 
     //Room 60: Diode
-    ddaRoomHasDDA[60] = false;
-    ddaRoomLevel[60] = 0;
+    ddaRoomLevel[60] = 2;
+    ddaDeathThreshold[60] = 1;
+    ddaShortTimeThreshold[60] = 0;
+    ddaLongTimeThreshold[60] = 600;
 
     //Room 61: I Smell Ozone
     ddaRoomHasDDA[61] = false;
@@ -8468,13 +8441,12 @@ void Game::ddaInit()
 
 void Game::ddaReset()
 {
-    ddaDifficulty = 5;  //Starting difficulty, we start 1 above the middle for room 9, which behaves differently
+    ddaDifficulty = 5;  //Starting difficulty, we start 1 above the middle difficulty for room 9, which behaves differently
     ddaCurrentRoom = 0;
     ddaFurthestRoomReached = 0;
     ddaDeathsInRoom = 0;
     ddaRoomStartTime = 0;
     ddaSameSpotDeaths = 0;
-    //ddaStruggledLastRoom = false;
     ddaStruggledThisRoom = false;
     ddaDeathRecordCount = 0;
     ddaSuccessStreak = 0;
@@ -8519,18 +8491,23 @@ void Game::ddaUpdate()
         bool longTimeExceeded = (timeInRoom >= ddaLongTimeThreshold[ddaCurrentRoom]);
         bool diedThreeTimesInSameSpot = (ddaSameSpotDeaths >= 3);
 
-        bool isStruggling = false;
+        //bool isStruggling = false;
+        int struggleCondition = 0;
 
         if (longTimeExceeded)
-            isStruggling = true;
+            struggleCondition = 1;
+        //isStruggling = true;
         else if (deathThresholdExceeded && shortTimeExceeded)
-            isStruggling = true;
+            struggleCondition = 2;
+        //isStruggling = true;
         else if (diedThreeTimesInSameSpot && shortTimeExceeded)
-            isStruggling = true;
+            struggleCondition = 3;
+        //isStruggling = true;
         else if (diedThreeTimesInSameSpot && deathThresholdExceeded)
-            isStruggling = true;
+            struggleCondition = 4;
+            //isStruggling = true;
 
-        if (isStruggling)
+        if (struggleCondition > 0) //isStruggling)
         {
             ddaStruggledThisRoom = true;
             ddaRoomState[ddaCurrentRoom].struggled = true;
@@ -8539,14 +8516,32 @@ void Game::ddaUpdate()
             ddaConsecutiveSuccesses = 0;
             ddaConsecutiveStruggles++;
 
+            bool difficultyChanged = false;
+            int oldDifficulty = ddaDifficulty;
+
             if (ddaCurrentRoom == 9 && ddaConsecutiveStruggles == 1 && ddaDifficulty > 1)
             {
                 ddaDifficulty--;
+                difficultyChanged = true;
             }
             else if (ddaConsecutiveStruggles >= 2 && ddaDifficulty > 1)
             {
                 ddaDifficulty--;
+                difficultyChanged = true;
                 DEBUG_LOG("DDA: Difficulty decreased to %d (consecutive struggles)", ddaDifficulty);
+            }
+
+            //Telemetry: Log difficulty decrease
+            if (difficultyChanged && telemetryDifficultyChangeCount < TELEMETRY_MAX_DIFFICULTY_CHANGES)
+            {
+                TelemetryDifficultyChange& change = telemetryDifficultyChanges[telemetryDifficultyChangeCount];
+                change.room = ddaCurrentRoom;
+                change.oldDifficulty = oldDifficulty;
+                change.newDifficulty = ddaDifficulty;
+                change.timestamp = ddaGetTotalGameSeconds();
+                change.isDecrease = true;
+                change.struggleCondition = struggleCondition;
+                telemetryDifficultyChangeCount++;
             }
         }
     }
@@ -8629,7 +8624,7 @@ void Game::ddaOnPlayerDeath()
             if (dx < 0) dx = -dx;
             if (dy < 0) dy = -dy;
 
-            if (dx <= 10 && dy <= 10)
+            if (dx <= 15 && dy <= 15)
             {
                 sameLocationDeaths++;
             }
@@ -8650,28 +8645,6 @@ void Game::ddaCheckStruggle()
     bool shortTimeExceeded = (timeInRoom >= ddaShortTimeThreshold[ddaCurrentRoom]);
     bool longTimeExceeded = (timeInRoom >= ddaLongTimeThreshold[ddaCurrentRoom]);
     bool diedThreeTimesInSameSpot = (ddaSameSpotDeaths >= 3);
-    //if (timeInRoom >= ddaLongTimeThreshold[ddaCurrentRoom])
-    //{
-        //ddaStruggledThisRoom = true;
-       // ddaRoomState[ddaCurrentRoom].struggled = true;
-        //int nextRoom = ddaCurrentRoom + 1;
-        //if (nextRoom < DDA_MAX_ROOMS && nextRoom > ddaFurthestRoomReached)
-        //{
-        //    ddaAddCheckpointsForRoom(nextRoom);
-        //}
-    //}
-    
-    /*int sameLocationDeaths = 0;
-    for (int i = 0; i < ddaDeathRecordCount; i++)
-    {
-        if (ddaDeathRecords[i].room == ddaCurrentRoom &&
-            ddaDeathRecords[i].x == roomx &&
-            ddaDeathRecords[i].y == roomy)
-        {
-            sameLocationDeaths++;
-        }
-    }
-    bool diedThreeTimesInSameSpot = (sameLocationDeaths >= 3);*/
 
     //Player is struggling if ANY of these conditions is true:
     bool isStruggling = false;
@@ -8745,9 +8718,25 @@ void Game::ddaOnRoomEnter(int room)
                     ddaConsecutiveSuccesses++;
                     if (ddaConsecutiveSuccesses >= 2 && ddaDifficulty < 7)
                     {
+                        int oldDifficulty = ddaDifficulty;
+
                         ddaDifficulty++;
+
                         ddaConsecutiveSuccesses = 0;
                         DEBUG_LOG("DDA: Difficulty increased to %d (consecutive successes)", ddaDifficulty);
+
+                        //Telemetry: Log difficulty increase
+                        if (telemetryDifficultyChangeCount < TELEMETRY_MAX_DIFFICULTY_CHANGES)
+                        {
+                            TelemetryDifficultyChange& change = telemetryDifficultyChanges[telemetryDifficultyChangeCount];
+                            change.room = ddaCurrentRoom;  //Room just completed
+                            change.oldDifficulty = oldDifficulty;
+                            change.newDifficulty = ddaDifficulty;
+                            change.timestamp = ddaGetTotalGameSeconds();
+                            change.isDecrease = false;
+                            change.struggleCondition = 0;  //Not applicable for increases
+                            telemetryDifficultyChangeCount++;
+                        }
                     }
                 }
             }
@@ -8943,6 +8932,8 @@ void Game::telemetryInit()
         telemetryRooms[i].visited = false;
     }
 
+    telemetryDifficultyChangeCount = 0;
+
     telemetryCheckpointsActivated = 0;
     telemetryActivatedCheckpointCount = 0;
     for (int i = 0; i < 200; i++)
@@ -9105,7 +9096,6 @@ std::string Game::telemetryGetRoomName(int index)
 
 void Game::telemetryWriteLog()
 {
-    //Calculate totals
     int totalGameSeconds = ddaGetTotalGameSeconds();
     float gameplayMinutes = (float)(totalGameSeconds - telemetryGameStartSeconds) / 60.0f;
     float kpm = (gameplayMinutes > 0) ? (telemetryTotalKeyPresses / gameplayMinutes) : 0;
@@ -9117,6 +9107,278 @@ void Game::telemetryWriteLog()
 #endif
 }
 
+void Game::telemetryWriteLocalFile(int totalGameSeconds, float kpm)
+{
+    //Generate unique filename with timestamp
+    time_t now = time(NULL);
+    struct tm* t = localtime(&now);
+    char filename[128];
+    SDL_snprintf(filename, sizeof(filename),
+        "telemetry_%04d%02d%02d_%02d%02d%02d_%s.txt",
+        t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
+        t->tm_hour, t->tm_min, t->tm_sec,
+        ddaEnabled ? "DDA" : "CONTROL");
+
+    //Open file in root directory
+    char filepath[512];
+    SDL_snprintf(filepath, sizeof(filepath), "%s%s", saveFilePath, filename);
+
+    FILE* f = fopen(filepath, "w");
+    if (!f)
+    {
+        DEBUG_LOG("TELEMETRY: Failed to open file: %s", filepath);
+        return;
+    }
+
+    int totalMinutes = totalGameSeconds / 60;
+    int totalSeconds = totalGameSeconds % 60;
+
+    //Write header
+    fprintf(f, "=== VVVVVV DDA RESEARCH TELEMETRY ===\n");
+    fprintf(f, "Group: %s\n", ddaEnabled ? "EXPERIMENT (DDA)" : "CONTROL (Fixed)");
+    fprintf(f, "Timestamp: %04d-%02d-%02d %02d:%02d:%02d\n\n",
+        t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
+        t->tm_hour, t->tm_min, t->tm_sec);
+
+    //Write summary
+    fprintf(f, "=== SUMMARY ===\n");
+    fprintf(f, "Total Deaths: %d\n", deathcounts);
+    fprintf(f, "Total Time: %d:%02d (minutes:seconds)\n", totalMinutes, totalSeconds);
+    fprintf(f, "Furthest Room Reached: %d (%s)\n",
+        ddaFurthestRoomReached, telemetryGetRoomName(ddaFurthestRoomReached).c_str());
+    fprintf(f, "Unique Checkpoints Activated: %d\n", telemetryCheckpointsActivated);
+    fprintf(f, "Total Key Presses: %d\n", telemetryTotalKeyPresses);
+    fprintf(f, "Average Key Presses Per Minute: %.2f\n\n", kpm);
+
+    //Write difficulty changes (DDA group only)
+    if (ddaEnabled)
+    {
+        fprintf(f, "=== DIFFICULTY CHANGES ===\n");
+        if (telemetryDifficultyChangeCount == 0)
+        {
+            fprintf(f, "No difficulty changes occurred.\n");
+        }
+        else
+        {
+            for (int i = 0; i < telemetryDifficultyChangeCount; i++)
+            {
+                TelemetryDifficultyChange& change = telemetryDifficultyChanges[i];
+                int changeMin = change.timestamp / 60;
+                int changeSec = change.timestamp % 60;
+
+                if (change.isDecrease)
+                {
+                    const char* conditionName = "";
+                    switch (change.struggleCondition)
+                    {
+                    case 1: conditionName = "Long time exceeded"; break;
+                    case 2: conditionName = "Deaths + short time exceeded"; break;
+                    case 3: conditionName = "Same spot deaths + short time exceeded"; break;
+                    case 4: conditionName = "Same spot deaths + death threshold exceeded"; break;
+                    }
+                    fprintf(f, "DECREASE: %d -> %d in Room %d (%s) at %d:%02d | Reason: %s\n",
+                        change.oldDifficulty, change.newDifficulty,
+                        change.room, telemetryGetRoomName(change.room).c_str(),
+                        changeMin, changeSec, conditionName);
+                }
+                else
+                {
+                    fprintf(f, "INCREASE: %d -> %d after Room %d (%s) at %d:%02d\n",
+                        change.oldDifficulty, change.newDifficulty,
+                        change.room, telemetryGetRoomName(change.room).c_str(),
+                        changeMin, changeSec);
+                }
+            }
+        }
+        fprintf(f, "\n");
+    }
+
+    //Write data for every room
+    fprintf(f, "=== PER-ROOM DATA ===\n\n");
+
+    for (int i = 0; i <= ddaFurthestRoomReached && i < DDA_MAX_ROOMS; i++)
+    {
+        if (!telemetryRooms[i].visited) continue;
+
+        TelemetryRoomData& room = telemetryRooms[i];
+        int roomMin = room.timeSpentSeconds / 60;
+        int roomSec = room.timeSpentSeconds % 60;
+
+        fprintf(f, "--- Room %d: %s ---\n", i, telemetryGetRoomName(i).c_str());
+        fprintf(f, "Time Spent: %d:%02d\n", roomMin, roomSec);
+
+        if (ddaEnabled)
+        {
+            fprintf(f, "Difficulty on Entry: %d\n", room.difficultyOnEntry);
+        }
+        fprintf(f, "Total Deaths: %d\n", room.totalDeaths);
+
+        if (room.deathCount > 0)
+        {
+            fprintf(f, "Death Details:\n");
+            for (int d = 0; d < room.deathCount; d++)
+            {
+                DDADeathRecord& death = room.deaths[d];
+                int deathMin = death.timestamp / 60;
+                int deathSec = death.timestamp % 60;
+                fprintf(f, "  Death #%d: Location(%d,%d), Time %d:%02d\n",
+                    death.deathNumber, death.x, death.y, deathMin, deathSec);
+            }
+        }
+        fprintf(f, "\n");
+    }
+
+    //Write per-minute KPM breakdown
+    fprintf(f, "=== KEY PRESSES PER MINUTE ===\n");
+    int gameplaySeconds = totalGameSeconds - telemetryGameStartSeconds;
+    int totalMinutesPlayed = (gameplaySeconds + 59) / 60;
+    for (int m = 0; m < totalMinutesPlayed && m < TELEMETRY_MAX_MINUTES; m++)
+    {
+        fprintf(f, "Minute %d: %d\n", m + 1, telemetryKeyPressesPerMinute[m]);
+    }
+
+    fclose(f);
+
+    DEBUG_LOG("TELEMETRY: Successfully wrote data to %s", filepath);
+    DEBUG_LOG("TELEMETRY: Total deaths=%d, Time=%d:%02d, Furthest room=%d, Checkpoints=%d, KPM=%.2f",
+        deathcounts, totalMinutes, totalSeconds, ddaFurthestRoomReached,
+        telemetryCheckpointsActivated, kpm);
+}
+
+#ifdef __EMSCRIPTEN__
+static char* telemetryJSONBuffer = NULL;
+
+static void telemetryFetchSuccess(emscripten_fetch_t* fetch) {
+    DEBUG_LOG("TELEMETRY: Successfully sent to Google Sheets");
+    emscripten_fetch_close(fetch);
+    if (telemetryJSONBuffer) {
+        free(telemetryJSONBuffer);
+        telemetryJSONBuffer = NULL;
+    }
+}
+
+static void telemetryFetchFail(emscripten_fetch_t* fetch) {
+    DEBUG_LOG("TELEMETRY: Failed to send to Google Sheets (status: %d)", fetch->status);
+    emscripten_fetch_close(fetch);
+    if (telemetryJSONBuffer) {
+        free(telemetryJSONBuffer);
+        telemetryJSONBuffer = NULL;
+    }
+}
+
+void Game::telemetrySendToGoogleSheets(int totalGameSeconds, float kpm)
+{
+    std::string json = "{";
+
+    json += "\"group\":\"" + std::string(ddaEnabled ? "EXPERIMENT (DDA)" : "CONTROL (Fixed)") + "\",";
+    json += "\"totalDeaths\":" + std::to_string(deathcounts) + ",";
+    json += "\"totalTimeSeconds\":" + std::to_string(totalGameSeconds) + ",";
+    json += "\"furthestRoom\":" + std::to_string(ddaFurthestRoomReached) + ",";
+    json += "\"furthestRoomName\":\"" + telemetryGetRoomName(ddaFurthestRoomReached) + "\",";
+    json += "\"checkpointsActivated\":" + std::to_string(telemetryCheckpointsActivated) + ",";
+
+    char kpmStr[32];
+    SDL_snprintf(kpmStr, sizeof(kpmStr), "%.2f", kpm);
+    json += "\"averageKeyPressesPerMinute\":" + std::string(kpmStr) + ",";
+
+    //Difficulty changes (DDA group only)
+    if (ddaEnabled)
+    {
+        json += "\"difficultyChanges\":[";
+        for (int i = 0; i < telemetryDifficultyChangeCount; i++)
+        {
+            if (i > 0) json += ",";
+
+            TelemetryDifficultyChange& change = telemetryDifficultyChanges[i];
+            json += "{";
+            json += "\"room\":" + std::to_string(change.room) + ",";
+            json += "\"roomName\":\"" + telemetryGetRoomName(change.room) + "\",";
+            json += "\"oldDifficulty\":" + std::to_string(change.oldDifficulty) + ",";
+            json += "\"newDifficulty\":" + std::to_string(change.newDifficulty) + ",";
+            json += "\"timestamp\":" + std::to_string(change.timestamp) + ",";
+            json += "\"isDecrease\":" + std::string(change.isDecrease ? "true" : "false");
+
+            if (change.isDecrease)
+            {
+                std::string conditionName;
+                switch (change.struggleCondition)
+                {
+                case 1: conditionName = "Long time exceeded"; break;
+                case 2: conditionName = "Deaths + short time exceeded"; break;
+                case 3: conditionName = "Same spot deaths + short time exceeded"; break;
+                case 4: conditionName = "Same spot deaths + death threshold exceeded"; break;
+                default: conditionName = "Unknown"; break;
+                }
+                json += ",\"struggleCondition\":\"" + conditionName + "\"";
+            }
+            json += "}";
+        }
+        json += "],";
+    }
+
+    //Room data
+    json += "\"roomData\":[";
+    bool firstRoom = true;
+    for (int i = 0; i <= ddaFurthestRoomReached && i < DDA_MAX_ROOMS; i++)
+    {
+        if (!telemetryRooms[i].visited) continue;
+
+        if (!firstRoom) json += ",";
+        firstRoom = false;
+
+        TelemetryRoomData& room = telemetryRooms[i];
+        json += "{";
+        json += "\"room\":" + std::to_string(i) + ",";
+        json += "\"name\":\"" + telemetryGetRoomName(i) + "\",";
+        json += "\"timeSpent\":" + std::to_string(room.timeSpentSeconds) + ",";
+        if (ddaEnabled)
+        {
+            json += "\"difficultyOnEntry\":" + std::to_string(room.difficultyOnEntry) + ",";
+        }
+        json += "\"deaths\":" + std::to_string(room.totalDeaths);
+        json += "}";
+    }
+    json += "],";
+
+    //Per-minute breakdown
+    json += "\"keyPressesPerMinute\":[";
+    int gameplaySeconds = totalGameSeconds - telemetryGameStartSeconds;
+    int totalMinutesPlayed = (gameplaySeconds + 59) / 60;
+    for (int m = 0; m < totalMinutesPlayed && m < TELEMETRY_MAX_MINUTES; m++)
+    {
+        if (m > 0) json += ",";
+        json += std::to_string(telemetryKeyPressesPerMinute[m]);
+    }
+    json += "]";
+
+    json += "}";
+
+    //Copy to persistent buffer (fetch is async)
+    if (telemetryJSONBuffer) {
+        free(telemetryJSONBuffer);
+    }
+    telemetryJSONBuffer = (char*)malloc(json.length() + 1);
+    strcpy(telemetryJSONBuffer, json.c_str());
+
+    emscripten_fetch_attr_t attr;
+    emscripten_fetch_attr_init(&attr);
+    strcpy(attr.requestMethod, "POST");
+    attr.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY;
+    attr.onsuccess = telemetryFetchSuccess;
+    attr.onerror = telemetryFetchFail;
+
+    const char* headers[] = { "Content-Type", "application/json", NULL };
+    attr.requestHeaders = headers;
+    attr.requestData = telemetryJSONBuffer;
+    attr.requestDataSize = json.length();
+
+    emscripten_fetch(&attr, "https://script.google.com/macros/s/AKfycbzV7NQQb5tGHoXJUKDts39EWVp1AmF6_qRqaDCmb1n8d3aZH8wE6Vh7bjOWHVJCsXIcmA/exec");
+
+    DEBUG_LOG("TELEMETRY: Sending data to Google Sheets...");
+}
+#endif
+
+/*
 void Game::telemetryWriteLocalFile(int totalGameSeconds, float kpm)
 {
     //Generate unique filename with timestamp
@@ -9306,98 +9568,4 @@ void Game::telemetrySendToGoogleSheets(int totalGameSeconds, float kpm)
     DEBUG_LOG("TELEMETRY: Sending data to Google Sheets...");
 }
 #endif
-
-/* OLD WriteLog
-void Game::telemetryWriteLog()
-{
-    //Generate unique filename with timestamp
-    time_t now = time(NULL);
-    struct tm* t = localtime(&now);
-    char filename[128];
-    SDL_snprintf(filename, sizeof(filename),
-        "telemetry_%04d%02d%02d_%02d%02d%02d_%s.txt",
-        t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
-        t->tm_hour, t->tm_min, t->tm_sec,
-        ddaEnabled ? "DDA" : "CONTROL");
-
-    //Open file in saves directory
-    char filepath[256];
-    SDL_snprintf(filepath, sizeof(filepath), "%s", filename);
-
-    FILE* f = fopen(filepath, "w");
-    if (!f)
-    {
-        vlog_error("TELEMETRY: Failed to open file: %s", filepath);
-        return;
-    }
-
-    //Calculate totals
-    int totalGameSeconds = ddaGetTotalGameSeconds();
-    int totalMinutes = totalGameSeconds / 60;
-    int totalSeconds = totalGameSeconds % 60;
-
-    float gameplayMinutes = (float)(totalGameSeconds - telemetryGameStartSeconds) / 60.0f;
-    float kpm = (gameplayMinutes > 0) ? (telemetryTotalKeyPresses / gameplayMinutes) : 0;
-
-    //Write header
-    fprintf(f, "=== VVVVVV DDA RESEARCH TELEMETRY ===\n");
-    fprintf(f, "Group: %s\n", ddaEnabled ? "EXPERIMENT (DDA)" : "CONTROL (Fixed)");
-    fprintf(f, "Timestamp: %04d-%02d-%02d %02d:%02d:%02d\n\n",
-        t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
-        t->tm_hour, t->tm_min, t->tm_sec);
-
-    //Write summary
-    fprintf(f, "=== SUMMARY ===\n");
-    fprintf(f, "Total Deaths: %d\n", deathcounts);
-    fprintf(f, "Total Time: %d:%02d (minutes:seconds)\n", totalMinutes, totalSeconds);
-    fprintf(f, "Furthest Room Reached: %d (%s)\n",
-        ddaFurthestRoomReached, telemetryGetRoomName(ddaFurthestRoomReached).c_str());
-    fprintf(f, "Unique Checkpoints Activated: %d\n", telemetryCheckpointsActivated);
-    fprintf(f, "Total Key Presses: %d\n", telemetryTotalKeyPresses);
-    fprintf(f, "Key Presses Per Minute: %.2f\n\n", kpm);
-
-    //Write per-room data
-    fprintf(f, "=== PER-ROOM DATA ===\n\n");
-
-    for (int i = 0; i <= ddaFurthestRoomReached && i < DDA_MAX_ROOMS; i++)
-    {
-        if (!telemetryRooms[i].visited) continue;
-
-        TelemetryRoomData& room = telemetryRooms[i];
-        int roomMin = room.timeSpentSeconds / 60;
-        int roomSec = room.timeSpentSeconds % 60;
-
-        fprintf(f, "--- Room %d: %s ---\n", i, telemetryGetRoomName(i).c_str());
-        fprintf(f, "Time Spent: %d:%02d\n", roomMin, roomSec);
-        
-        //Only for DDA group
-        if (ddaEnabled)
-        {
-            fprintf(f, "Difficulty on Entry: %d\n", room.difficultyOnEntry);
-        }
-        fprintf(f, "Total Deaths: %d\n", room.totalDeaths);
-
-        if (room.deathCount > 0)
-        {
-            fprintf(f, "Death Details:\n");
-            for (int d = 0; d < room.deathCount; d++)
-            {
-                DDADeathRecord& death = room.deaths[d];
-                int deathMin = death.timestamp / 60;
-                int deathSec = death.timestamp % 60;
-                fprintf(f, "  Death #%d: Location(%d,%d), Time %d:%02d\n",
-                    death.deathNumber, death.x, death.y, deathMin, deathSec);
-            }
-        }
-        fprintf(f, "\n");
-    }
-
-    fclose(f);
-
-    //Debug output to console
-    DEBUG_LOG("TELEMETRY: Successfully wrote data to %s", filepath);
-    DEBUG_LOG("TELEMETRY: Total deaths=%d, Time=%d:%02d, Furthest room=%d, Checkpoints=%d, KPM=%.2f",
-        deathcounts, totalMinutes, totalSeconds, ddaFurthestRoomReached,
-        telemetryCheckpointsActivated, kpm);
-}
 */

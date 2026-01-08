@@ -2996,7 +2996,7 @@ static void rendermapcursor(const bool flashing)
 void maprender(void)
 {
     //DDA RESEARCH: disable quicksaving with bool
-    bool enableQuicksaving = true;
+    bool enableQuicksaving = false;
     
     graphics.set_render_target(graphics.menuTexture);
     graphics.clear();
@@ -3351,6 +3351,15 @@ void maprender(void)
                 vformat_buf(
                     buffer, sizeof(buffer),
                     loc::gettext("[Press {button} to save your game]"),
+                    "button:but",
+                    vformat_button(ActionSet_InGame, Action_InGame_ACTION)
+                );
+            }
+            if (!enableQuicksaving)
+            {
+                vformat_buf(
+                    buffer, sizeof(buffer),
+                    loc::gettext("[Can't quicksave in the experiment!]"),
                     "button:but",
                     vformat_button(ActionSet_InGame, Action_InGame_ACTION)
                 );

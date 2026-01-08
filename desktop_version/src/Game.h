@@ -243,29 +243,29 @@ public:
     int ddaLongTimeThreshold[DDA_MAX_ROOMS];      //Seconds before considered "struggling heavily"
 
     bool ddaRoomHasDDA[DDA_MAX_ROOMS];        //false for tutorial rooms and final rooms
-    int ddaRoomLevel[DDA_MAX_ROOMS];          //0 = tutorial/final, 1 = Space Station, 2 = Laboratory
+    int ddaRoomLevel[DDA_MAX_ROOMS];          //0 = tutorial/end of space station/lab, 1 = Space Station, 2 = Laboratory
     DDARoomState ddaRoomState[DDA_MAX_ROOMS]; //Room DDA tracking
 
     //DDA System Functions
-    void ddaInit();                               //Initialize DDA system
-    void ddaReset();                              //Reset for new game
+    void ddaInit();
+    void ddaReset();
 
     void ddaUpdate(); //Update DDA
-    int ddaConsecutiveStruggles;    //Track consecutive struggle rooms for difficulty decrease
-    int ddaConsecutiveSuccesses;    //Track consecutive success rooms for difficulty increase
-    bool ddaRoomCheckpointsLocked[DDA_MAX_ROOMS];  //Once checkpoints set for a room, don't change
+    int ddaConsecutiveStruggles;                    //Track consecutive struggle rooms for difficulty decrease
+    int ddaConsecutiveSuccesses;                    //Track consecutive success rooms for difficulty increase
+    bool ddaRoomCheckpointsLocked[DDA_MAX_ROOMS];   //Once checkpoints set for a room, don't change
 
-    void ddaOnPlayerDeath();                      //Called when player dies
-    void ddaOnRoomEnter(int room);                //Called when entering new room
-    void ddaOnRoomComplete(int room);             //Called when completing a room
-    void ddaEvaluateAndAdjust();                  //Evaluate struggle and adjust difficulty
-    void ddaCheckStruggle();                      //Check for struggling
-    void ddaAddCheckpointsForRoom(int room);      //Determine checkpoints for a room
-    void ddaUpdateCheckpoints();                  //Update checkpoints
+    void ddaOnPlayerDeath();                        //Called when player dies
+    void ddaOnRoomEnter(int room);                  //Called when entering new room
+    void ddaOnRoomComplete(int room);               //Called when completing a room
+    void ddaEvaluateAndAdjust();                    //Evaluate struggle and adjust difficulty
+    void ddaCheckStruggle();                        //Check for struggling
+    void ddaAddCheckpointsForRoom(int room);        //Determine checkpoints for a room
+    void ddaUpdateCheckpoints();                    //Update checkpoints
 
-    int ddaGetTotalGameSeconds();                 //Get current game time in seconds
-    int ddaGetRoomIndex(const std::string& name); //Map room name to index (0-63)
-    //DDA RESEARCH - STOP
+    int ddaGetTotalGameSeconds();                   //Get current game time in seconds
+    int ddaGetRoomIndex(const std::string& name);   //Map room name to index (0-63)
+    //DDA RESEARCH - END
 
     //=======================================================================
 
@@ -279,15 +279,28 @@ public:
         bool visited;                            //Has player visited this room?
     };
 
-    //Telemetry variables
     TelemetryRoomData telemetryRooms[DDA_MAX_ROOMS];  //Data for each of 64 rooms
     int telemetryCheckpointsActivated;                //Count of unique checkpoint activations
 
-    //Tracking up to 200 checkpoints total using a simple list
-    int telemetryActivatedCheckpointIDs[200];       //Store the checkpoint ID values
+    //Difficulty change tracking for telemetry
+    struct TelemetryDifficultyChange {
+        int room;                    //Room where change occurred
+        int oldDifficulty;
+        int newDifficulty;
+        int timestamp;               //Game seconds when change occurred
+        bool isDecrease;             //true = decrease (struggle), false = increase (success)
+        int struggleCondition;       //Only for decreases: 1=longTime, 2=deaths+shortTime, 3=sameSpot+shortTime, 4=sameSpot+deaths
+    };
+
+    static const int TELEMETRY_MAX_DIFFICULTY_CHANGES = 50;
+    TelemetryDifficultyChange telemetryDifficultyChanges[TELEMETRY_MAX_DIFFICULTY_CHANGES];
+    int telemetryDifficultyChangeCount;
+
+    //Tracking up to 200 checkpoints total
+    int telemetryActivatedCheckpointIDs[200];         //Store the checkpoint ID values
     int telemetryActivatedCheckpointCount;            //How many unique checkpoints activated
     int telemetryTotalKeyPresses;                     //Total key presses during gameplay
-    int telemetryGameStartSeconds;                    //When gameplay started (for key presses per minute, aka KPM, calculation)
+    int telemetryGameStartSeconds;                    //When gameplay started for key presses per minute (KPM) calculation
 
     //Key state tracking for detecting key-down events
     bool telemetryKeyWasDown_left;
@@ -295,11 +308,11 @@ public:
     bool telemetryKeyWasDown_action;
 
     //Key press tracking per minute
-    static const int TELEMETRY_MAX_MINUTES = 60;  //Up to 60 minutes of gameplay
+    static const int TELEMETRY_MAX_MINUTES = 60;      //Up to 60 minutes of gameplay, which is very unlikely to ever be reached
     int telemetryKeyPressesPerMinute[TELEMETRY_MAX_MINUTES];
 
     //Telemetry functions
-    void telemetryInit();                             //Initialize telemetry system
+    void telemetryInit();
     void telemetryOnRoomEnter(int room);              //Called when entering a room (first time only records difficulty)
     void telemetryOnRoomExit(int room);               //Called when leaving a room (records time spent)
     void telemetryOnDeath(int room, int x, int y);    //Called on each death
@@ -315,7 +328,7 @@ public:
     void telemetrySendToGoogleSheets(int totalGameSeconds, float kpm);  //Web: send to Google Sheets
     #endif
 
-    //DDA RESEARCH: End of telemetry
+    //DDA TELEMETRY - END
 
     
     void init(void);
