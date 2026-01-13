@@ -11,8 +11,10 @@
 #include <cstdio>
 #ifdef __EMSCRIPTEN__
 #include <emscripten/fetch.h>
-#endif
+#define DEBUG_LOG(...) ((void)0)
+#else
 #include "debug.h"
+#endif
 
 #include "ButtonGlyphs.h"
 #include "Constants.h"
@@ -9246,25 +9248,7 @@ void Game::telemetryWriteLocalFile(int totalGameSeconds, float kpm)
 }
 
 #ifdef __EMSCRIPTEN__
-static char* telemetryJSONBuffer = NULL;
-
-static void telemetryFetchSuccess(emscripten_fetch_t* fetch) {
-    DEBUG_LOG("TELEMETRY: Successfully sent to Google Sheets");
-    emscripten_fetch_close(fetch);
-    if (telemetryJSONBuffer) {
-        free(telemetryJSONBuffer);
-        telemetryJSONBuffer = NULL;
-    }
-}
-
-static void telemetryFetchFail(emscripten_fetch_t* fetch) {
-    DEBUG_LOG("TELEMETRY: Failed to send to Google Sheets (status: %d)", fetch->status);
-    emscripten_fetch_close(fetch);
-    if (telemetryJSONBuffer) {
-        free(telemetryJSONBuffer);
-        telemetryJSONBuffer = NULL;
-    }
-}
+#include <emscripten/emscripten.h>
 
 void Game::telemetrySendToGoogleSheets(int totalGameSeconds, float kpm)
 {
@@ -9281,7 +9265,6 @@ void Game::telemetrySendToGoogleSheets(int totalGameSeconds, float kpm)
     SDL_snprintf(kpmStr, sizeof(kpmStr), "%.2f", kpm);
     json += "\"averageKeyPressesPerMinute\":" + std::string(kpmStr) + ",";
 
-    //Difficulty changes (DDA group only)
     if (ddaEnabled)
     {
         json += "\"difficultyChanges\":[";
@@ -9316,7 +9299,6 @@ void Game::telemetrySendToGoogleSheets(int totalGameSeconds, float kpm)
         json += "],";
     }
 
-    //Room data
     json += "\"roomData\":[";
     bool firstRoom = true;
     for (int i = 0; i <= ddaFurthestRoomReached && i < DDA_MAX_ROOMS; i++)
@@ -9340,7 +9322,6 @@ void Game::telemetrySendToGoogleSheets(int totalGameSeconds, float kpm)
     }
     json += "],";
 
-    //Per-minute breakdown
     json += "\"keyPressesPerMinute\":[";
     int gameplaySeconds = totalGameSeconds - telemetryGameStartSeconds;
     int totalMinutesPlayed = (gameplaySeconds + 59) / 60;
@@ -9353,219 +9334,45 @@ void Game::telemetrySendToGoogleSheets(int totalGameSeconds, float kpm)
 
     json += "}";
 
-    //Copy to persistent buffer (fetch is async)
-    if (telemetryJSONBuffer) {
-        free(telemetryJSONBuffer);
+    // URL-encode the JSON
+    std::string encoded = "";
+    for (size_t i = 0; i < json.length(); i++)
+    {
+        char c = json[i];
+        if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') ||
+            c == '-' || c == '_' || c == '.' || c == '~')
+        {
+            encoded += c;
+        }
+        else
+        {
+            char hex[4];
+            SDL_snprintf(hex, sizeof(hex), "%%%02X", (unsigned char)c);
+            encoded += hex;
+        }
     }
-    telemetryJSONBuffer = (char*)malloc(json.length() + 1);
-    strcpy(telemetryJSONBuffer, json.c_str());
 
-    emscripten_fetch_attr_t attr;
-    emscripten_fetch_attr_init(&attr);
-    strcpy(attr.requestMethod, "POST");
-    attr.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY;
-    attr.onsuccess = telemetryFetchSuccess;
-    attr.onerror = telemetryFetchFail;
+    std::string script =
+        "var iframe = document.createElement('iframe');"
+        "iframe.style.display = 'none';"
+        "iframe.name = 'telemetry_frame';"
+        "document.body.appendChild(iframe);"
+        "var form = document.createElement('form');"
+        "form.method = 'POST';"
+        "form.action = 'https://script.google.com/macros/s/AKfycbxTmZM65dOBqN5JW2pl3n7WRv5yiU1SUiEu1qEI8x4HPcOFhSveD0eU1ZX18GSXEPV-UQ/exec';"
+        "form.target = 'telemetry_frame';"
+        "var input = document.createElement('input');"
+        "input.type = 'hidden';"
+        "input.name = 'data';"
+        "input.value = decodeURIComponent('" + encoded + "');"
+        "form.appendChild(input);"
+        "document.body.appendChild(form);"
+        "form.submit();"
+        "console.log('TELEMETRY: Form submitted to iframe');"
+        "setTimeout(function() { document.body.removeChild(form); document.body.removeChild(iframe); }, 5000);";
 
-    const char* headers[] = { "Content-Type", "application/json", NULL };
-    attr.requestHeaders = headers;
-    attr.requestData = telemetryJSONBuffer;
-    attr.requestDataSize = json.length();
+    emscripten_run_script(script.c_str());
 
-    emscripten_fetch(&attr, "https://script.google.com/macros/s/AKfycbzV7NQQb5tGHoXJUKDts39EWVp1AmF6_qRqaDCmb1n8d3aZH8wE6Vh7bjOWHVJCsXIcmA/exec");
-
-    DEBUG_LOG("TELEMETRY: Sending data to Google Sheets...");
+    printf("TELEMETRY: Sending data to Google Sheets via iframe form...\n");
 }
 #endif
-
-/*
-void Game::telemetryWriteLocalFile(int totalGameSeconds, float kpm)
-{
-    //Generate unique filename with timestamp
-    time_t now = time(NULL);
-    struct tm* t = localtime(&now);
-    char filename[128];
-    SDL_snprintf(filename, sizeof(filename),
-        "telemetry_%04d%02d%02d_%02d%02d%02d_%s.txt",
-        t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
-        t->tm_hour, t->tm_min, t->tm_sec,
-        ddaEnabled ? "DDA" : "CONTROL");
-
-    //Open file in root directory
-    char filepath[512];
-    SDL_snprintf(filepath, sizeof(filepath), "%s%s", saveFilePath, filename);
-
-    FILE* f = fopen(filepath, "w");
-    if (!f)
-    {
-        DEBUG_LOG("TELEMETRY: Failed to open file: %s", filepath);
-        return;
-    }
-
-    int totalMinutes = totalGameSeconds / 60;
-    int totalSeconds = totalGameSeconds % 60;
-
-    //Write header
-    fprintf(f, "=== VVVVVV DDA RESEARCH TELEMETRY ===\n");
-    fprintf(f, "Group: %s\n", ddaEnabled ? "EXPERIMENT (DDA)" : "CONTROL (Fixed)");
-    fprintf(f, "Timestamp: %04d-%02d-%02d %02d:%02d:%02d\n\n",
-        t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
-        t->tm_hour, t->tm_min, t->tm_sec);
-
-    //Write summary
-    fprintf(f, "=== SUMMARY ===\n");
-    fprintf(f, "Total Deaths: %d\n", deathcounts);
-    fprintf(f, "Total Time: %d:%02d (minutes:seconds)\n", totalMinutes, totalSeconds);
-    fprintf(f, "Furthest Room Reached: %d (%s)\n",
-        ddaFurthestRoomReached, telemetryGetRoomName(ddaFurthestRoomReached).c_str());
-    fprintf(f, "Unique Checkpoints Activated: %d\n", telemetryCheckpointsActivated);
-    fprintf(f, "Total Key Presses: %d\n", telemetryTotalKeyPresses);
-    fprintf(f, "Average Key Presses Per Minute: %.2f\n\n", kpm);
-
-    //Write data for every room
-    fprintf(f, "=== PER-ROOM DATA ===\n\n");
-
-    for (int i = 0; i <= ddaFurthestRoomReached && i < DDA_MAX_ROOMS; i++)
-    {
-        if (!telemetryRooms[i].visited) continue;
-
-        TelemetryRoomData& room = telemetryRooms[i];
-        int roomMin = room.timeSpentSeconds / 60;
-        int roomSec = room.timeSpentSeconds % 60;
-
-        fprintf(f, "--- Room %d: %s ---\n", i, telemetryGetRoomName(i).c_str());
-        fprintf(f, "Time Spent: %d:%02d\n", roomMin, roomSec);
-
-        if (ddaEnabled)
-        {
-            fprintf(f, "Difficulty on Entry: %d\n", room.difficultyOnEntry);
-        }
-        fprintf(f, "Total Deaths: %d\n", room.totalDeaths);
-
-        if (room.deathCount > 0)
-        {
-            fprintf(f, "Death Details:\n");
-            for (int d = 0; d < room.deathCount; d++)
-            {
-                DDADeathRecord& death = room.deaths[d];
-                int deathMin = death.timestamp / 60;
-                int deathSec = death.timestamp % 60;
-                fprintf(f, "  Death #%d: Location(%d,%d), Time %d:%02d\n",
-                    death.deathNumber, death.x, death.y, deathMin, deathSec);
-            }
-        }
-        fprintf(f, "\n");
-    }
-
-    //Write per-minute KPM breakdown
-    fprintf(f, "=== KEY PRESSES PER MINUTE ===\n");
-    int gameplaySeconds = totalGameSeconds - telemetryGameStartSeconds;
-    int totalMinutesPlayed = (gameplaySeconds + 59) / 60;  //Round up to include partial minute
-    for (int m = 0; m < totalMinutesPlayed && m < TELEMETRY_MAX_MINUTES; m++)
-    {
-        fprintf(f, "Minute %d: %d\n", m + 1, telemetryKeyPressesPerMinute[m]);
-    }
-
-    fclose(f);
-
-    DEBUG_LOG("TELEMETRY: Successfully wrote data to %s", filepath);
-    DEBUG_LOG("TELEMETRY: Total deaths=%d, Time=%d:%02d, Furthest room=%d, Checkpoints=%d, KPM=%.2f",
-        deathcounts, totalMinutes, totalSeconds, ddaFurthestRoomReached,
-        telemetryCheckpointsActivated, kpm);
-}
-
-#ifdef __EMSCRIPTEN__
-static char* telemetryJSONBuffer = NULL;
-
-static void telemetryFetchSuccess(emscripten_fetch_t* fetch) {
-    DEBUG_LOG("TELEMETRY: Successfully sent to Google Sheets");
-    emscripten_fetch_close(fetch);
-    if (telemetryJSONBuffer) {
-        free(telemetryJSONBuffer);
-        telemetryJSONBuffer = NULL;
-    }
-}
-
-static void telemetryFetchFail(emscripten_fetch_t* fetch) {
-    DEBUG_LOG("TELEMETRY: Failed to send to Google Sheets (status: %d)", fetch->status);
-    emscripten_fetch_close(fetch);
-    if (telemetryJSONBuffer) {
-        free(telemetryJSONBuffer);
-        telemetryJSONBuffer = NULL;
-    }
-}
-
-void Game::telemetrySendToGoogleSheets(int totalGameSeconds, float kpm)
-{
-    std::string json = "{";
-
-    json += "\"group\":\"" + std::string(ddaEnabled ? "EXPERIMENT (DDA)" : "CONTROL (Fixed)") + "\",";
-    json += "\"totalDeaths\":" + std::to_string(deathcounts) + ",";
-    json += "\"totalTimeSeconds\":" + std::to_string(totalGameSeconds) + ",";
-    json += "\"furthestRoom\":" + std::to_string(ddaFurthestRoomReached) + ",";
-    json += "\"furthestRoomName\":\"" + telemetryGetRoomName(ddaFurthestRoomReached) + "\",";
-    json += "\"checkpointsActivated\":" + std::to_string(telemetryCheckpointsActivated) + ",";
-
-    char kpmStr[32];
-    SDL_snprintf(kpmStr, sizeof(kpmStr), "%.2f", kpm);
-    json += "\"keyPressesPerMinute\":" + std::string(kpmStr) + ",";
-
-    json += "\"roomData\":[";
-    bool firstRoom = true;
-    for (int i = 0; i <= ddaFurthestRoomReached && i < DDA_MAX_ROOMS; i++)
-    {
-        if (!telemetryRooms[i].visited) continue;
-
-        if (!firstRoom) json += ",";
-        firstRoom = false;
-
-        TelemetryRoomData& room = telemetryRooms[i];
-        json += "{";
-        json += "\"room\":" + std::to_string(i) + ",";
-        json += "\"name\":\"" + telemetryGetRoomName(i) + "\",";
-        json += "\"timeSpent\":" + std::to_string(room.timeSpentSeconds) + ",";
-        if (ddaEnabled)
-        {
-            json += "\"difficultyOnEntry\":" + std::to_string(room.difficultyOnEntry) + ",";
-        }
-        json += "\"deaths\":" + std::to_string(room.totalDeaths);
-        json += "}";
-    }
-    json += "]";
-    //Per-minute breakdown
-    json += "\"keyPressesPerMinute\":[";
-    int gameplaySeconds = totalGameSeconds - telemetryGameStartSeconds;
-    int totalMinutesPlayed = (gameplaySeconds + 59) / 60;
-    for (int m = 0; m < totalMinutesPlayed && m < TELEMETRY_MAX_MINUTES; m++)
-    {
-        if (m > 0) json += ",";
-        json += std::to_string(telemetryKeyPressesPerMinute[m]);
-    }
-    json += "],";
-    json += "}";
-
-    // Copy to persistent buffer (fetch is async)
-    if (telemetryJSONBuffer) {
-        free(telemetryJSONBuffer);
-    }
-    telemetryJSONBuffer = (char*)malloc(json.length() + 1);
-    strcpy(telemetryJSONBuffer, json.c_str());
-
-    emscripten_fetch_attr_t attr;
-    emscripten_fetch_attr_init(&attr);
-    strcpy(attr.requestMethod, "POST");
-    attr.attributes = EMSCRIPTEN_FETCH_LOAD_TO_MEMORY;
-    attr.onsuccess = telemetryFetchSuccess;
-    attr.onerror = telemetryFetchFail;
-
-    const char* headers[] = { "Content-Type", "application/json", NULL };
-    attr.requestHeaders = headers;
-    attr.requestData = telemetryJSONBuffer;
-    attr.requestDataSize = json.length();
-
-    emscripten_fetch(&attr, "https://script.google.com/macros/s/AKfycbzV7NQQb5tGHoXJUKDts39EWVp1AmF6_qRqaDCmb1n8d3aZH8wE6Vh7bjOWHVJCsXIcmA/exec");
-
-    DEBUG_LOG("TELEMETRY: Sending data to Google Sheets...");
-}
-#endif
-*/
