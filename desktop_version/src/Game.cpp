@@ -8128,39 +8128,35 @@ void Game::ddaInit()
 
     //Room 9: Gantry and Dolly
     ddaRoomLevel[9] = 1;
-    ddaDeathThreshold[9] = 4;
-    ddaShortTimeThreshold[9] = 20;
-    ddaLongTimeThreshold[9] = 35;
+    ddaDeathThreshold[9] = 1;
+    ddaShortTimeThreshold[9] = 10;
+    ddaLongTimeThreshold[9] = 20;
 
     //Room 10: The Yes Men
     ddaRoomLevel[10] = 1;
-    ddaDeathThreshold[10] = 4;
-    ddaShortTimeThreshold[10] = 20;
-    ddaLongTimeThreshold[10] = 35;
+    ddaDeathThreshold[10] = 2;
+    ddaShortTimeThreshold[10] = 15;
+    ddaLongTimeThreshold[10] = 30;
 
     //Room 11: Stop and Reflect
     ddaRoomLevel[11] = 1;
     ddaDeathThreshold[11] = 3;
-    ddaShortTimeThreshold[11] = 20;
-    ddaLongTimeThreshold[11] = 35;
+    ddaShortTimeThreshold[11] = 15;
+    ddaLongTimeThreshold[11] = 30;
 
     //Room 12: V Stitch
-    ddaRoomLevel[12] = 1;
-    ddaDeathThreshold[12] = 1;
-    ddaShortTimeThreshold[12] = 5;
-    ddaLongTimeThreshold[12] = 15;
+    ddaRoomHasDDA[12] = false;
+    ddaRoomLevel[12] = 0;
 
     //Room 13: B-B-B-Busted
     ddaRoomLevel[13] = 1;
-    ddaDeathThreshold[13] = 2;
+    ddaDeathThreshold[13] = 1;
     ddaShortTimeThreshold[13] = 1;
     ddaLongTimeThreshold[13] = 10;
 
     //Room 14: The Sensible Room
-    ddaRoomLevel[14] = 1;
-    ddaDeathThreshold[14] = 1;
-    ddaShortTimeThreshold[14] = 5;
-    ddaLongTimeThreshold[14] = 15;
+    ddaRoomHasDDA[14] = false;
+    ddaRoomLevel[14] = 0;
 
     //Room 15: Boo! Think Fast!
     ddaRoomLevel[15] = 1;
@@ -8187,10 +8183,8 @@ void Game::ddaInit()
     ddaLongTimeThreshold[18] = 10;
 
     //Room 19: Quicksand
-    ddaRoomLevel[19] = 1;
-    ddaDeathThreshold[19] = 1;
-    ddaShortTimeThreshold[19] = 0;
-    ddaLongTimeThreshold[19] = 15;
+    ddaRoomHasDDA[19] = false;
+    ddaRoomLevel[19] = 0;
 
     //Room 20: The Tomb of Mad Carew
     ddaRoomLevel[20] = 1;
@@ -8241,16 +8235,12 @@ void Game::ddaInit()
     ddaLongTimeThreshold[27] = 15;
 
     //Room 28: Don't Flip Out
-    ddaRoomLevel[28] = 2;
-    ddaDeathThreshold[28] = 1;
-    ddaShortTimeThreshold[28] = 0;
-    ddaLongTimeThreshold[28] = 15;
+    ddaRoomHasDDA[28] = false;
+    ddaRoomLevel[28] = 0;
 
     //Room 29: Shuffled Hallway
-    ddaRoomLevel[29] = 2;
-    ddaDeathThreshold[29] = 2;
-    ddaShortTimeThreshold[29] = 5;
-    ddaLongTimeThreshold[29] = 15;
+    ddaRoomHasDDA[29] = false;
+    ddaRoomLevel[29] = 0;
 
     //Room 30: Double-Slit Experiment
     ddaRoomLevel[30] = 2;
@@ -8294,8 +8284,6 @@ void Game::ddaInit()
     ddaShortTimeThreshold[36] = 12;
     ddaLongTimeThreshold[36] = 25;
 
-    //Disabled DDA for rooms 37-39 since it's mostly bouncing
-
     //Room 37: Free Your Mind
     ddaRoomHasDDA[37] = false;
     ddaRoomLevel[37] = 0;
@@ -8314,19 +8302,19 @@ void Game::ddaInit()
     ddaShortTimeThreshold[40] = 0;
     ddaLongTimeThreshold[40] = 600;
 
-    //Room 41: Safety Dance
+    //Room 41: Barani, Barani
     ddaRoomLevel[41] = 2;
     ddaDeathThreshold[41] = 1;
     ddaShortTimeThreshold[41] = 0;
     ddaLongTimeThreshold[41] = 600;
 
-    //Room 42: Barani, Barani
+    //Room 42: Safety Dance
     ddaRoomLevel[42] = 2;
     ddaDeathThreshold[42] = 2;
     ddaShortTimeThreshold[42] = 0;
     ddaLongTimeThreshold[42] = 600;
 
-    //DDA disabled 43-45 again due to lack of challenge
+    //DDA disabled 43-46 again due to lack of challenge
 
     //Room 43: Exhausted?
     ddaRoomHasDDA[43] = false;
@@ -8341,18 +8329,14 @@ void Game::ddaInit()
     ddaRoomLevel[45] = 0;
 
     //Room 46: Here We Go Again
-    ddaRoomLevel[46] = 2;
-    ddaDeathThreshold[46] = 1;
-    ddaShortTimeThreshold[46] = 0;
-    ddaLongTimeThreshold[46] = 15;
+    ddaRoomHasDDA[46] = false;
+    ddaRoomLevel[46] = 0;
 
     //Room 47: The Bernoulli Principle
     ddaRoomLevel[47] = 2;
     ddaDeathThreshold[47] = 3;
     ddaShortTimeThreshold[47] = 12;
     ddaLongTimeThreshold[47] = 25;
-
-    //DDA disabled 48 & 49; no challenge
 
     //Room 48: Standing Wave
     ddaRoomHasDDA[48] = false;
@@ -8895,8 +8879,8 @@ int Game::ddaGetRoomIndex(const std::string& name)
     if (name == "I Changed My Mind, Thelma...") return 38;
     if (name == "Indirect Jump Vector") return 39;
     if (name == "In a Single Bound") return 40;
-    if (name == "Safety Dance") return 41;
-    if (name == "Barani, Barani") return 42;
+    if (name == "Barani, Barani") return 41;
+    if (name == "Safety Dance") return 42;
     if (name == "Exhausted?") return 43;
     if (name == "Heady Heights") return 44;
     if (name == "Entanglement Generator") return 45;
@@ -9079,7 +9063,7 @@ std::string Game::telemetryGetRoomName(int index)
         "Three's a Crowd", "Hitting the Apex", "Square Root",
         "Thorny Exchange", "Brought to you by the letter G", "Free Your Mind",
         "I Changed My Mind, Thelma...", "Indirect Jump Vector",
-        "In a Single Bound", "Safety Dance", "Barani, Barani",
+        "In a Single Bound", "Barani, Barani", "Safety Dance",
         "Exhausted?", "Heady Heights", "Entanglement Generator",
         "Here We Go Again", "The Bernoulli Principle", "Standing Wave",
         "Topsy Turvyism", "Spike Strip Deployed", "Vibrating String Problem",

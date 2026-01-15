@@ -213,10 +213,9 @@ const short* labclass::loadlevel(int rx, int ry)
             }
             if (game.ddaAddCheckpoint2[25])
             {
-                obj.createentity(42, 184, 10, 1, 251491);  // (savepoint)
+                obj.createentity(20, 184, 10, 1, 251491);  // (savepoint)
             }
         }
-
         rcol = 4;
 
         roomname = "Rascasse";
@@ -1059,10 +1058,9 @@ const short* labclass::loadlevel(int rx, int ry)
             //EXPERIMENT GROUP
             if (game.ddaAddCheckpoint2[41])
             {
-                obj.createentity(30, 29, 10, 1, 250540);  // (savepoint)
+                obj.createentity(10, 29, 10, 1, 250540);  // (savepoint)
             }
         }
-
         rcol=1;
 
         roomname = "Barani, Barani";
