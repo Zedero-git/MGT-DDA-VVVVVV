@@ -8128,20 +8128,20 @@ void Game::ddaInit()
 
     //Room 9: Gantry and Dolly
     ddaRoomLevel[9] = 1;
-    ddaDeathThreshold[9] = 1;
+    ddaDeathThreshold[9] = 2;
     ddaShortTimeThreshold[9] = 10;
     ddaLongTimeThreshold[9] = 20;
 
     //Room 10: The Yes Men
     ddaRoomLevel[10] = 1;
-    ddaDeathThreshold[10] = 2;
-    ddaShortTimeThreshold[10] = 15;
+    ddaDeathThreshold[10] = 1;
+    ddaShortTimeThreshold[10] = 17;
     ddaLongTimeThreshold[10] = 30;
 
     //Room 11: Stop and Reflect
     ddaRoomLevel[11] = 1;
     ddaDeathThreshold[11] = 3;
-    ddaShortTimeThreshold[11] = 15;
+    ddaShortTimeThreshold[11] = 18;
     ddaLongTimeThreshold[11] = 30;
 
     //Room 12: V Stitch
@@ -8151,7 +8151,7 @@ void Game::ddaInit()
     //Room 13: B-B-B-Busted
     ddaRoomLevel[13] = 1;
     ddaDeathThreshold[13] = 1;
-    ddaShortTimeThreshold[13] = 1;
+    ddaShortTimeThreshold[13] = 0;
     ddaLongTimeThreshold[13] = 10;
 
     //Room 14: The Sensible Room
@@ -8161,7 +8161,7 @@ void Game::ddaInit()
     //Room 15: Boo! Think Fast!
     ddaRoomLevel[15] = 1;
     ddaDeathThreshold[15] = 2;
-    ddaShortTimeThreshold[15] = 1;
+    ddaShortTimeThreshold[15] = 0;
     ddaLongTimeThreshold[15] = 15;
 
     //Room 16: Driller
@@ -8188,15 +8188,15 @@ void Game::ddaInit()
 
     //Room 20: The Tomb of Mad Carew
     ddaRoomLevel[20] = 1;
-    ddaDeathThreshold[20] = 2;
-    ddaShortTimeThreshold[20] = 10;
-    ddaLongTimeThreshold[20] = 20;
+    ddaDeathThreshold[20] = 1;
+    ddaShortTimeThreshold[20] = 5;
+    ddaLongTimeThreshold[20] = 15;
 
     //Room 21: Brass Sent Us Under The Top
     ddaRoomLevel[21] = 1;
     ddaDeathThreshold[21] = 3;
-    ddaShortTimeThreshold[21] = 10;
-    ddaLongTimeThreshold[21] = 20;
+    ddaShortTimeThreshold[21] = 12;
+    ddaLongTimeThreshold[21] = 25;
 
     //Room 22: A Wrinkle in Time
     ddaRoomHasDDA[22] = false;
@@ -8268,21 +8268,21 @@ void Game::ddaInit()
 
     //Room 34: Square Root
     ddaRoomLevel[34] = 2;
-    ddaDeathThreshold[34] = 2;
-    ddaShortTimeThreshold[34] = 7;
-    ddaLongTimeThreshold[34] = 20;
+    ddaDeathThreshold[34] = 1;
+    ddaShortTimeThreshold[34] = 6;
+    ddaLongTimeThreshold[34] = 15;
 
     //Room 35: Thorny Exchange
     ddaRoomLevel[35] = 2;
     ddaDeathThreshold[35] = 2;
-    ddaShortTimeThreshold[35] = 5;
+    ddaShortTimeThreshold[35] = 0;
     ddaLongTimeThreshold[35] = 600;
 
     //Room 36: Brought to you by the letter G
     ddaRoomLevel[36] = 2;
     ddaDeathThreshold[36] = 2;
-    ddaShortTimeThreshold[36] = 12;
-    ddaLongTimeThreshold[36] = 25;
+    ddaShortTimeThreshold[36] = 6;
+    ddaLongTimeThreshold[36] = 20;
 
     //Room 37: Free Your Mind
     ddaRoomHasDDA[37] = false;
@@ -8298,19 +8298,19 @@ void Game::ddaInit()
 
     //Room 40: In a Single Bound
     ddaRoomLevel[40] = 2;
-    ddaDeathThreshold[40] = 2;
+    ddaDeathThreshold[40] = 3;
     ddaShortTimeThreshold[40] = 0;
     ddaLongTimeThreshold[40] = 600;
 
     //Room 41: Barani, Barani
     ddaRoomLevel[41] = 2;
-    ddaDeathThreshold[41] = 1;
+    ddaDeathThreshold[41] = 2;
     ddaShortTimeThreshold[41] = 0;
     ddaLongTimeThreshold[41] = 600;
 
     //Room 42: Safety Dance
     ddaRoomLevel[42] = 2;
-    ddaDeathThreshold[42] = 2;
+    ddaDeathThreshold[42] = 3;
     ddaShortTimeThreshold[42] = 0;
     ddaLongTimeThreshold[42] = 600;
 
@@ -8334,7 +8334,7 @@ void Game::ddaInit()
 
     //Room 47: The Bernoulli Principle
     ddaRoomLevel[47] = 2;
-    ddaDeathThreshold[47] = 3;
+    ddaDeathThreshold[47] = 5;
     ddaShortTimeThreshold[47] = 12;
     ddaLongTimeThreshold[47] = 25;
 
@@ -8349,14 +8349,14 @@ void Game::ddaInit()
     //Room 50: Spike Strip Deployed
     ddaRoomLevel[50] = 2;
     ddaDeathThreshold[50] = 3;
-    ddaShortTimeThreshold[50] = 10;
-    ddaLongTimeThreshold[50] = 20;
+    ddaShortTimeThreshold[50] = 7;
+    ddaLongTimeThreshold[50] = 15;
 
     //Room 51: Vibrating String Problem
     ddaRoomLevel[51] = 2;
     ddaDeathThreshold[51] = 3;
-    ddaShortTimeThreshold[51] = 05;
-    ddaLongTimeThreshold[51] = 20;
+    ddaShortTimeThreshold[51] = 15;
+    ddaLongTimeThreshold[51] = 25;
 
     //Room 52: Merge
     ddaRoomHasDDA[52] = false;
@@ -8376,7 +8376,7 @@ void Game::ddaInit()
 
     //Room 55: Please Forgive Me!
     ddaRoomLevel[55] = 2;
-    ddaDeathThreshold[55] = 2;
+    ddaDeathThreshold[55] = 4;
     ddaShortTimeThreshold[55] = 0;
     ddaLongTimeThreshold[55] = 20;
 
@@ -8388,15 +8388,15 @@ void Game::ddaInit()
 
     //Room 57: A Difficult Chord
     ddaRoomLevel[57] = 2;
-    ddaDeathThreshold[57] = 4;
+    ddaDeathThreshold[57] = 8;
     ddaShortTimeThreshold[57] = 15;
     ddaLongTimeThreshold[57] = 25;
 
     //Room 58: The Living Dead End
     ddaRoomLevel[58] = 2;
-    ddaDeathThreshold[58] = 3;
-    ddaShortTimeThreshold[58] = 12;
-    ddaLongTimeThreshold[58] = 25;
+    ddaDeathThreshold[58] = 5;
+    ddaShortTimeThreshold[58] = 17;
+    ddaLongTimeThreshold[58] = 35;
     
     //Lab end: Don't need DDA, except for extra checkpoint in Diode
     
