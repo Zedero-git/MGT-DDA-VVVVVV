@@ -8195,8 +8195,8 @@ void Game::ddaInit()
     //Room 21: Brass Sent Us Under The Top
     ddaRoomLevel[21] = 1;
     ddaDeathThreshold[21] = 3;
-    ddaShortTimeThreshold[21] = 12;
-    ddaLongTimeThreshold[21] = 25;
+    ddaShortTimeThreshold[21] = 10;
+    ddaLongTimeThreshold[21] = 20;
 
     //Room 22: A Wrinkle in Time
     ddaRoomHasDDA[22] = false;
@@ -8212,9 +8212,9 @@ void Game::ddaInit()
 
     //Room 24: It's Perfectly Safe
     ddaRoomLevel[24] = 2;
-    ddaDeathThreshold[24] = 2;
+    ddaDeathThreshold[24] = 1;
     ddaShortTimeThreshold[24] = 0;
-    ddaLongTimeThreshold[24] = 10;
+    ddaLongTimeThreshold[24] = 15;
 
     //Room 25: Rascasse
     ddaRoomLevel[25] = 2;
@@ -8427,7 +8427,7 @@ void Game::ddaInit()
 
 void Game::ddaReset()
 {
-    ddaDifficulty = 5;  //Starting difficulty, we start 1 above the middle difficulty for room 9, which behaves differently
+    ddaDifficulty = 4;
     ddaCurrentRoom = 0;
     ddaFurthestRoomReached = 0;
     ddaDeathsInRoom = 0;
@@ -8436,6 +8436,8 @@ void Game::ddaReset()
     ddaStruggledThisRoom = false;
     ddaDeathRecordCount = 0;
     ddaSuccessStreak = 0;
+    ddaAssumedSuccess = false;
+    ddaPreAssumeDifficulty = 4;
 
     ddaFirstDDARoom = true;
 
@@ -8493,28 +8495,58 @@ void Game::ddaUpdate()
             struggleCondition = 4;
             //isStruggling = true;
 
-        if (struggleCondition > 0) //isStruggling)
+        if (struggleCondition > 0)
         {
             ddaStruggledThisRoom = true;
             ddaRoomState[ddaCurrentRoom].struggled = true;
 
-            //Decrease difficulty
-            ddaConsecutiveSuccesses = 0;
-            ddaConsecutiveStruggles++;
+            // Undo assumed success first (if we actually increased)
+            if (ddaAssumedSuccess)
+            {
+                ddaDifficulty--;
+                ddaAssumedSuccess = false;
+                DEBUG_LOG("DDA: Undoing assumed increase, difficulty back to %d", ddaDifficulty);
+            }
 
+            // Apply struggle decrease (capped at 1)
+            if (ddaDifficulty > 1)
+            {
+                ddaDifficulty--;
+                DEBUG_LOG("DDA: Difficulty decreased to %d (struggle in room %d)", ddaDifficulty, ddaCurrentRoom);
+            }
+
+            // Telemetry: Log difficulty decrease (comparing to pre-assume state)
+            bool difficultyChanged = (ddaDifficulty != ddaPreAssumeDifficulty);
+            if (difficultyChanged && telemetryDifficultyChangeCount < TELEMETRY_MAX_DIFFICULTY_CHANGES)
+            {
+                TelemetryDifficultyChange& change = telemetryDifficultyChanges[telemetryDifficultyChangeCount];
+                change.room = ddaCurrentRoom;
+                change.oldDifficulty = ddaPreAssumeDifficulty;
+                change.newDifficulty = ddaDifficulty;
+                change.timestamp = ddaGetTotalGameSeconds();
+                change.isDecrease = true;
+                change.struggleCondition = struggleCondition;
+                telemetryDifficultyChangeCount++;
+            }
+
+            /*
+            //Decrease difficulty
             bool difficultyChanged = false;
             int oldDifficulty = ddaDifficulty;
 
-            if (ddaCurrentRoom == 9 && ddaConsecutiveStruggles == 1 && ddaDifficulty > 1)
+            // Room 9 special case: struggle = -2 difficulty (to reach stage 3)
+            if (ddaCurrentRoom == 9)
             {
-                ddaDifficulty--;
-                difficultyChanged = true;
+                ddaDifficulty -= 2;
+                if (ddaDifficulty < 1) ddaDifficulty = 1;
+                difficultyChanged = (ddaDifficulty != oldDifficulty);
+                DEBUG_LOG("DDA: Difficulty decreased to %d (struggle in room 9)", ddaDifficulty);
             }
-            else if (ddaConsecutiveStruggles >= 2 && ddaDifficulty > 1)
+            else if (ddaDifficulty > 1)
             {
                 ddaDifficulty--;
                 difficultyChanged = true;
-                DEBUG_LOG("DDA: Difficulty decreased to %d (consecutive struggles)", ddaDifficulty);
+                DEBUG_LOG("DDA: Difficulty decreased to %d (struggle in room %d)", ddaDifficulty, ddaCurrentRoom);
             }
 
             //Telemetry: Log difficulty decrease
@@ -8529,6 +8561,7 @@ void Game::ddaUpdate()
                 change.struggleCondition = struggleCondition;
                 telemetryDifficultyChangeCount++;
             }
+            */
         }
     }
 
@@ -8663,7 +8696,7 @@ void Game::ddaCheckStruggle()
     }
 }
 
-void Game::ddaOnRoomEnter(int room)
+/*void Game::ddaOnRoomEnter(int room)
 {
     if (room < 0 || room >= DDA_MAX_ROOMS) return;
     if (room == ddaCurrentRoom) return;
@@ -8691,25 +8724,20 @@ void Game::ddaOnRoomEnter(int room)
             //Track success for difficulty increase
             if (!ddaStruggledThisRoom)
             {
-                ddaConsecutiveStruggles = 0;
-
                 //Room 9 special case: immediate difficulty increase on success
                 if (ddaCurrentRoom == 9)
                 {
-                    ddaConsecutiveSuccesses = 0;
-                    ddaConsecutiveStruggles = 0;
+                    DEBUG_LOG("DDA: Room 9 success - difficulty unchanged at %d", ddaDifficulty);
                 }
                 else
                 {
-                    ddaConsecutiveSuccesses++;
-                    if (ddaConsecutiveSuccesses >= 2 && ddaDifficulty < 7)
+                    if (ddaDifficulty < 7)
                     {
                         int oldDifficulty = ddaDifficulty;
 
                         ddaDifficulty++;
 
-                        ddaConsecutiveSuccesses = 0;
-                        DEBUG_LOG("DDA: Difficulty increased to %d (consecutive successes)", ddaDifficulty);
+                        DEBUG_LOG("DDA: Difficulty increased to %d (success in room %d)", ddaDifficulty, ddaCurrentRoom);
 
                         //Telemetry: Log difficulty increase
                         if (telemetryDifficultyChangeCount < TELEMETRY_MAX_DIFFICULTY_CHANGES)
@@ -8761,6 +8789,110 @@ void Game::ddaOnRoomEnter(int room)
     ddaCurrentRoom = room;
 
     //Debug output
+    DEBUG_LOG("DDA: Entered room %d | Difficulty: %d | Deaths: %d | New: %s",
+        ddaCurrentRoom,
+        ddaDifficulty,
+        ddaDeathsInRoom,
+        isNewFurthestRoom ? "YES" : "NO");
+}*/
+
+void Game::ddaOnRoomEnter(int room)
+{
+    if (room < 0 || room >= DDA_MAX_ROOMS) return;
+    if (room == ddaCurrentRoom) return;
+
+    //Save current room's state before leaving
+    ddaRoomState[ddaCurrentRoom].deaths = ddaDeathsInRoom;
+    ddaRoomState[ddaCurrentRoom].timeSpentSeconds += (ddaGetTotalGameSeconds() - ddaRoomStartTime);
+    ddaRoomState[ddaCurrentRoom].struggled = ddaStruggledThisRoom;
+
+    bool isNewFurthestRoom = (room > ddaFurthestRoomReached);
+
+    //Handle room completion when moving forward
+    if (room > ddaCurrentRoom && ddaRoomState[ddaCurrentRoom].completed == false)
+    {
+        ddaRoomState[ddaCurrentRoom].completed = true;
+
+        if (ddaFirstDDARoom && ddaCurrentRoom == 8)
+        {
+            ddaFirstDDARoom = false;
+            DEBUG_LOG("DDA TRACKING START");
+            //Don't adjust difficulty, just mark as complete and continue
+
+            ddaPreAssumeDifficulty = ddaDifficulty;
+            ddaAssumedSuccess = false;
+
+            if (ddaEnabled && ddaDifficulty < 7)
+            {
+                ddaDifficulty++;
+                ddaAssumedSuccess = true;
+                DEBUG_LOG("DDA: Assumed success for room 9, pre-increased to %d", ddaDifficulty);
+            }
+        }
+        else if (ddaRoomHasDDA[ddaCurrentRoom])
+        {
+            //Success confirmed: log telemetry for the assumed increase (if one happened)
+            if (!ddaStruggledThisRoom && ddaAssumedSuccess)
+            {
+                if (telemetryDifficultyChangeCount < TELEMETRY_MAX_DIFFICULTY_CHANGES)
+                {
+                    TelemetryDifficultyChange& change = telemetryDifficultyChanges[telemetryDifficultyChangeCount];
+                    change.room = ddaCurrentRoom;
+                    change.oldDifficulty = ddaPreAssumeDifficulty;
+                    change.newDifficulty = ddaDifficulty;
+                    change.timestamp = ddaGetTotalGameSeconds();
+                    change.isDecrease = false;
+                    change.struggleCondition = 0;
+                    telemetryDifficultyChangeCount++;
+                }
+                DEBUG_LOG("DDA: Confirmed difficulty increase to %d (success in room %d)", ddaDifficulty, ddaCurrentRoom);
+            }
+        }
+
+        if (isNewFurthestRoom)
+        {
+            telemetryOnRoomExit(ddaCurrentRoom);
+        }
+    }
+
+    //Lock checkpoints for the room we're entering (if new)
+    if (isNewFurthestRoom)
+    {
+        ddaFurthestRoomReached = room;
+        ddaRoomCheckpointsLocked[room] = true;
+        telemetryOnRoomEnter(room);  //Records difficulty BEFORE assuming
+
+        //Reset and store pre-assumption state
+        ddaAssumedSuccess = false;
+        ddaPreAssumeDifficulty = ddaDifficulty;
+
+        //ASSUME SUCCESS (only for DDA-active rooms)
+        if (ddaEnabled && ddaRoomHasDDA[room] && ddaDifficulty < 7 && !ddaFirstDDARoom)
+        {
+            ddaDifficulty++;
+            ddaAssumedSuccess = true;
+            DEBUG_LOG("DDA: Assumed success, pre-increased to %d", ddaDifficulty);
+        }
+
+        ddaDeathsInRoom = 0;
+        ddaRoomStartTime = ddaGetTotalGameSeconds();
+        ddaStruggledThisRoom = false;
+        ddaDeathRecordCount = 0;
+        ddaSameSpotDeaths = 0;
+    }
+    else
+    {
+        //Revisiting
+        ddaDeathsInRoom = ddaRoomState[room].deaths;
+        ddaRoomStartTime = ddaGetTotalGameSeconds();
+        ddaStruggledThisRoom = ddaRoomState[room].struggled;
+        ddaDeathRecordCount = 0;
+        ddaSameSpotDeaths = 0;
+    }
+
+    //Switch to new room
+    ddaCurrentRoom = room;
+
     DEBUG_LOG("DDA: Entered room %d | Difficulty: %d | Deaths: %d | New: %s",
         ddaCurrentRoom,
         ddaDifficulty,

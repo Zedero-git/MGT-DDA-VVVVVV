@@ -989,6 +989,8 @@ void mapclass::gotoroom(int rx, int ry)
         //Alright, change music depending on where we are:
         music.changemusicarea(game.roomx - 100, game.roomy - 100);
     }
+    
+    
     loadlevel(game.roomx, game.roomy);
 
 

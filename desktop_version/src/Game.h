@@ -222,9 +222,10 @@ public:
     int ddaDeathsInRoom;                      //Deaths in current room
     int ddaRoomStartTime;                     //Timestamp when room was entered (in total seconds)
     int ddaSameSpotDeaths;                    //Count of deaths in same spot, updated on death, for same death location comparison
-    //bool ddaStruggledLastRoom;                //Did player struggle in previous room?
     bool ddaStruggledThisRoom;                //Is player currently struggling?
     int ddaSuccessStreak;
+    bool ddaAssumedSuccess;                   //Did we pre-increase difficulty for this room?
+    int ddaPreAssumeDifficulty;               //Difficulty before assuming (for telemetry)
 
     //Death location tracking (store last 10 deaths)
     static const int DDA_MAX_DEATH_RECORDS = 10;
@@ -251,8 +252,6 @@ public:
     void ddaReset();
 
     void ddaUpdate(); //Update DDA
-    int ddaConsecutiveStruggles;                    //Track consecutive struggle rooms for difficulty decrease
-    int ddaConsecutiveSuccesses;                    //Track consecutive success rooms for difficulty increase
     bool ddaRoomCheckpointsLocked[DDA_MAX_ROOMS];   //Once checkpoints set for a room, don't change
 
     void ddaOnPlayerDeath();                        //Called when player dies
