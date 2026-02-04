@@ -9390,6 +9390,24 @@ void Game::telemetryWriteLocalFile(int totalGameSeconds, float kpm)
 
 void Game::telemetrySendToGoogleSheets(int totalGameSeconds, float kpm)
 {
+    for (int i = 0; i <= ddaFurthestRoomReached && i < DDA_MAX_ROOMS; i++)
+    {
+        if (telemetryRooms[i].visited)
+        {
+            if (i == ddaCurrentRoom)
+            {
+                // Current room: accumulated time + unsaved time from current visit
+                telemetryRooms[i].timeSpentSeconds = ddaRoomState[i].timeSpentSeconds
+                    + (ddaGetTotalGameSeconds() - ddaRoomStartTime);
+            }
+            else
+            {
+                // Other rooms: just accumulated time
+                telemetryRooms[i].timeSpentSeconds = ddaRoomState[i].timeSpentSeconds;
+            }
+        }
+    }
+    
     std::string json = "{";
 
     json += "\"group\":\"" + std::string(ddaEnabled ? "EXPERIMENT (DDA)" : "CONTROL (Fixed)") + "\",";
