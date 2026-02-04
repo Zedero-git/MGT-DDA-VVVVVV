@@ -8220,7 +8220,7 @@ void Game::ddaInit()
     ddaRoomLevel[25] = 2;
     ddaDeathThreshold[25] = 3;
     ddaShortTimeThreshold[25] = 12;
-    ddaLongTimeThreshold[25] = 25;
+    ddaLongTimeThreshold[25] = 30;
 
     //Room 26: Keep Going
     ddaRoomLevel[26] = 2;
@@ -8243,10 +8243,8 @@ void Game::ddaInit()
     ddaRoomLevel[29] = 0;
 
     //Room 30: Double-Slit Experiment
-    ddaRoomLevel[30] = 2;
-    ddaDeathThreshold[30] = 1;
-    ddaShortTimeThreshold[30] = 5;
-    ddaLongTimeThreshold[30] = 15;
+    ddaRoomHasDDA[30] = false;
+    ddaRoomLevel[30] = 0;
 
     //Room 31: They Call Him Flipper
     ddaRoomLevel[31] = 2;
@@ -8398,17 +8396,15 @@ void Game::ddaInit()
     ddaShortTimeThreshold[58] = 17;
     ddaLongTimeThreshold[58] = 35;
     
-    //Lab end: Don't need DDA, except for extra checkpoint in Diode
+    //Lab end: Don't need DDA
     
     //Room 59: AAAAAA
     ddaRoomHasDDA[59] = false;
     ddaRoomLevel[59] = 0;
 
     //Room 60: Diode
-    ddaRoomLevel[60] = 2;
-    ddaDeathThreshold[60] = 1;
-    ddaShortTimeThreshold[60] = 0;
-    ddaLongTimeThreshold[60] = 600;
+    ddaRoomHasDDA[60] = false;
+    ddaRoomLevel[60] = 0;
 
     //Room 61: I Smell Ozone
     ddaRoomHasDDA[61] = false;
@@ -9044,6 +9040,7 @@ void Game::telemetryInit()
     for (int i = 0; i < DDA_MAX_ROOMS; i++)
     {
         telemetryRooms[i].timeSpentSeconds = 0;
+        telemetryRooms[i].timestampOnEntry = 0;
         telemetryRooms[i].difficultyOnEntry = -1;  //-1 means not yet visited
         telemetryRooms[i].totalDeaths = 0;
         telemetryRooms[i].deathCount = 0;
@@ -9080,6 +9077,7 @@ void Game::telemetryOnRoomEnter(int room)
     if (!telemetryRooms[room].visited)
     {
         telemetryRooms[room].difficultyOnEntry = ddaDifficulty;
+        telemetryRooms[room].timestampOnEntry = ddaGetTotalGameSeconds();
         telemetryRooms[room].visited = true;
     }
 }
@@ -9227,6 +9225,25 @@ void Game::telemetryWriteLog()
 
 void Game::telemetryWriteLocalFile(int totalGameSeconds, float kpm)
 {
+    // Sync final room times from DDA state to telemetry
+    for (int i = 0; i <= ddaFurthestRoomReached && i < DDA_MAX_ROOMS; i++)
+    {
+        if (telemetryRooms[i].visited)
+        {
+            if (i == ddaCurrentRoom)
+            {
+                // Current room: accumulated time + unsaved time from current visit
+                telemetryRooms[i].timeSpentSeconds = ddaRoomState[i].timeSpentSeconds
+                    + (ddaGetTotalGameSeconds() - ddaRoomStartTime);
+            }
+            else
+            {
+                // Other rooms: just accumulated time
+                telemetryRooms[i].timeSpentSeconds = ddaRoomState[i].timeSpentSeconds;
+            }
+        }
+    }
+    
     //Generate unique filename with timestamp
     time_t now = time(NULL);
     struct tm* t = localtime(&now);
@@ -9323,6 +9340,11 @@ void Game::telemetryWriteLocalFile(int totalGameSeconds, float kpm)
         int roomSec = room.timeSpentSeconds % 60;
 
         fprintf(f, "--- Room %d: %s ---\n", i, telemetryGetRoomName(i).c_str());
+        
+        int entryMin = room.timestampOnEntry / 60;
+        int entrySec = room.timestampOnEntry % 60;
+        fprintf(f, "First Entered At: %d:%02d\n", entryMin, entrySec);
+
         fprintf(f, "Time Spent: %d:%02d\n", roomMin, roomSec);
 
         if (ddaEnabled)
@@ -9428,12 +9450,28 @@ void Game::telemetrySendToGoogleSheets(int totalGameSeconds, float kpm)
         json += "{";
         json += "\"room\":" + std::to_string(i) + ",";
         json += "\"name\":\"" + telemetryGetRoomName(i) + "\",";
+        json += "\"timestampOnEntry\":" + std::to_string(room.timestampOnEntry) + ",";
         json += "\"timeSpent\":" + std::to_string(room.timeSpentSeconds) + ",";
         if (ddaEnabled)
         {
             json += "\"difficultyOnEntry\":" + std::to_string(room.difficultyOnEntry) + ",";
         }
-        json += "\"deaths\":" + std::to_string(room.totalDeaths);
+        json += "\"deaths\":" + std::to_string(room.totalDeaths) + ",";
+        
+        json += "\"deathDetails\":[";
+        for (int d = 0; d < room.deathCount; d++)
+        {
+            if (d > 0) json += ",";
+            DDADeathRecord& death = room.deaths[d];
+            json += "{";
+            json += "\"deathNumber\":" + std::to_string(death.deathNumber) + ",";
+            json += "\"x\":" + std::to_string(death.x) + ",";
+            json += "\"y\":" + std::to_string(death.y) + ",";
+            json += "\"timestamp\":" + std::to_string(death.timestamp);
+            json += "}";
+        }
+        json += "]";
+        
         json += "}";
     }
     json += "],";
@@ -9475,7 +9513,7 @@ void Game::telemetrySendToGoogleSheets(int totalGameSeconds, float kpm)
         "document.body.appendChild(iframe);"
         "var form = document.createElement('form');"
         "form.method = 'POST';"
-        "form.action = 'https://script.google.com/macros/s/AKfycbxTmZM65dOBqN5JW2pl3n7WRv5yiU1SUiEu1qEI8x4HPcOFhSveD0eU1ZX18GSXEPV-UQ/exec';"
+        "form.action = 'https://script.google.com/macros/s/AKfycbxiwvWlpeCoeYyh1qmrtntas6JaZJ8Y1qGEWU3spostwBiPJ7gp_TGJTbBtC5bNhWJ_Tg/exec';"
         "form.target = 'telemetry_frame';"
         "var input = document.createElement('input');"
         "input.type = 'hidden';"

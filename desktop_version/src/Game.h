@@ -272,6 +272,7 @@ public:
     struct TelemetryRoomData {
         int timeSpentSeconds;                    //Total time spent in this room
         int difficultyOnEntry;                   //Difficulty level when first entering
+        int timestampOnEntry;                    //Game time when first entering
         int totalDeaths;                         //Total deaths in this room
         DDADeathRecord deaths[100];              //Reuse DDADeathRecord, with up to 100 deaths per room
         int deathCount;                          //Actual number of deaths recorded
