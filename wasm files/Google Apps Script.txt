@@ -1,0 +1,173 @@
+var SPREADSHEET_ID = "1_cMBr72FKkDBYA77Fj9Tj5I5Eb3iL4tdYvt4ZCbIpWg";
+var FOLDER_ID = "1mYmYZ2eOY5giWZQMzRZYfjogCAdb15gu";
+
+function doPost(e) {
+  try {
+    var data;
+    
+    if (e.parameter && e.parameter.data) {
+      data = JSON.parse(e.parameter.data);
+    } else if (e.postData && e.postData.contents) {
+      data = JSON.parse(e.postData.contents);
+    } else {
+      throw new Error("No data received");
+    }
+    
+    // Create the detailed report document
+    var docUrl = createDetailedReport(data);
+    
+    var sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getActiveSheet();
+    
+    // Format time as MM:SS
+    var totalMinutes = Math.floor(data.totalTimeSeconds / 60);
+    var totalSeconds = data.totalTimeSeconds % 60;
+    var timeFormatted = totalMinutes + ":" + (totalSeconds < 10 ? "0" : "") + totalSeconds;
+    
+    // Build KPM per minute string
+    var kpmText = "";
+    if (data.keyPressesPerMinute) {
+      for (var i = 0; i < data.keyPressesPerMinute.length; i++) {
+        if (i > 0) kpmText += ", ";
+        kpmText += "Min" + (i + 1) + ": " + data.keyPressesPerMinute[i];
+      }
+    }
+    
+    sheet.appendRow([
+      new Date().toISOString(),
+      data.group,
+      data.totalDeaths,
+      timeFormatted,
+      data.furthestRoom,
+      data.furthestRoomName,
+      data.checkpointsActivated,
+      data.averageKeyPressesPerMinute,
+      kpmText,
+      docUrl
+    ]);
+    
+    return ContentService
+      .createTextOutput(JSON.stringify({status: "success"}))
+      .setMimeType(ContentService.MimeType.JSON);
+      
+  } catch (error) {
+    return ContentService
+      .createTextOutput(JSON.stringify({status: "error", message: error.toString()}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function createDetailedReport(data) {
+  var timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+  var docName = "VVVVVV_Telemetry_" + timestamp + "_" + (data.group === "EXPERIMENT (DDA)" ? "DDA" : "CONTROL");
+  
+  var doc = DocumentApp.create(docName);
+  var body = doc.getBody();
+  
+  // Format time
+  var totalMinutes = Math.floor(data.totalTimeSeconds / 60);
+  var totalSeconds = data.totalTimeSeconds % 60;
+  var timeFormatted = totalMinutes + ":" + (totalSeconds < 10 ? "0" : "") + totalSeconds;
+  
+  // Header
+  body.appendParagraph("=== VVVVVV DDA RESEARCH TELEMETRY ===").setHeading(DocumentApp.ParagraphHeading.HEADING1);
+  body.appendParagraph("Group: " + data.group);
+  body.appendParagraph("Timestamp: " + new Date().toISOString());
+  body.appendParagraph("");
+  
+  // Summary
+  body.appendParagraph("=== SUMMARY ===").setHeading(DocumentApp.ParagraphHeading.HEADING2);
+  body.appendParagraph("Total Deaths: " + data.totalDeaths);
+  body.appendParagraph("Total Time: " + timeFormatted + " (minutes:seconds)");
+  body.appendParagraph("Furthest Room Reached: " + data.furthestRoom + " (" + data.furthestRoomName + ")");
+  body.appendParagraph("Unique Checkpoints Activated: " + data.checkpointsActivated);
+  body.appendParagraph("Average Key Presses Per Minute: " + data.averageKeyPressesPerMinute);
+  body.appendParagraph("");
+  
+  // Difficulty Changes (DDA only)
+  if (data.group === "EXPERIMENT (DDA)" && data.difficultyChanges && data.difficultyChanges.length > 0) {
+    body.appendParagraph("=== DIFFICULTY CHANGES ===").setHeading(DocumentApp.ParagraphHeading.HEADING2);
+    for (var i = 0; i < data.difficultyChanges.length; i++) {
+      var change = data.difficultyChanges[i];
+      var changeMin = Math.floor(change.timestamp / 60);
+      var changeSec = change.timestamp % 60;
+      var timeStr = changeMin + ":" + (changeSec < 10 ? "0" : "") + changeSec;
+      
+      if (change.isDecrease) {
+        body.appendParagraph("DECREASE: " + change.oldDifficulty + " -> " + change.newDifficulty + 
+          " in Room " + change.room + " (" + change.roomName + ") at " + timeStr + 
+          " | Reason: " + change.struggleCondition);
+      } else {
+        body.appendParagraph("INCREASE: " + change.oldDifficulty + " -> " + change.newDifficulty + 
+          " after Room " + change.room + " (" + change.roomName + ") at " + timeStr);
+      }
+    }
+    body.appendParagraph("");
+  } else if (data.group === "EXPERIMENT (DDA)") {
+    body.appendParagraph("=== DIFFICULTY CHANGES ===").setHeading(DocumentApp.ParagraphHeading.HEADING2);
+    body.appendParagraph("No difficulty changes occurred.");
+    body.appendParagraph("");
+  }
+  
+  // Per-Room Data
+  body.appendParagraph("=== PER-ROOM DATA ===").setHeading(DocumentApp.ParagraphHeading.HEADING2);
+  body.appendParagraph("");
+  
+  if (data.roomData) {
+    for (var i = 0; i < data.roomData.length; i++) {
+      var room = data.roomData[i];
+
+      var entryMin = Math.floor(room.timestampOnEntry / 60);
+      var entrySec = room.timestampOnEntry % 60;
+      var entryTimeStr = entryMin + ":" + (entrySec < 10 ? "0" : "") + entrySec;
+
+      var roomMin = Math.floor(room.timeSpent / 60);
+      var roomSec = room.timeSpent % 60;
+      var roomTimeStr = roomMin + ":" + (roomSec < 10 ? "0" : "") + roomSec;
+      
+      body.appendParagraph("--- Room " + room.room + ": " + room.name + " ---").setBold(true);
+      body.appendParagraph("First Entered At: " + entryTimeStr);
+      body.appendParagraph("Time Spent: " + roomTimeStr);
+      if (data.group === "EXPERIMENT (DDA)" && room.difficultyOnEntry !== undefined) {
+        body.appendParagraph("Difficulty on Entry: " + room.difficultyOnEntry);
+      }
+      body.appendParagraph("Total Deaths: " + room.deaths);
+
+      if (room.deathDetails && room.deathDetails.length > 0) {
+      body.appendParagraph("Death Details:");
+      for (var d = 0; d < room.deathDetails.length; d++) {
+        var death = room.deathDetails[d];
+        var deathMin = Math.floor(death.timestamp / 60);
+        var deathSec = death.timestamp % 60;
+        var deathTimeStr = deathMin + ":" + (deathSec < 10 ? "0" : "") + deathSec;
+        body.appendParagraph("  Death #" + death.deathNumber + ": Location(" + death.x + "," + death.y + "), Time " + deathTimeStr);
+        }
+      }
+
+      body.appendParagraph("");
+    }
+  }
+  
+  // Key Presses Per Minute
+  body.appendParagraph("=== KEY PRESSES PER MINUTE ===").setHeading(DocumentApp.ParagraphHeading.HEADING2);
+  if (data.keyPressesPerMinute) {
+    for (var i = 0; i < data.keyPressesPerMinute.length; i++) {
+      body.appendParagraph("Minute " + (i + 1) + ": " + data.keyPressesPerMinute[i]);
+    }
+  }
+  
+  doc.saveAndClose();
+  
+  // Move to folder if specified
+  if (FOLDER_ID) {
+    var file = DriveApp.getFileById(doc.getId());
+    var folder = DriveApp.getFolderById(FOLDER_ID);
+    folder.addFile(file);
+    DriveApp.getRootFolder().removeFile(file);
+  }
+  
+  return doc.getUrl();
+}
+
+function doGet(e) {
+  return ContentService.createTextOutput("Telemetry endpoint is active!");
+}
