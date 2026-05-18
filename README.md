@@ -2,6 +2,8 @@
 -------
 This is an altered version of the 2010 indie game VVVVVV using the officially released source code on [GitHub](https://github.com/TerryCavanagh/vvvvvv). This is used non-commercially for the experiment for my (Zeb De Roover) master thesis "Adaptive Checkpoints for Flow State Optimization in Video Games", as a student in the Master's program in Game Technology at the Breda University of applied sciences.
 
+The data collected during the experiments has been anonymized and made available in this repository for analysis and review for any future research.
+
 Licenses and many other files are left as-is, directly cloned from the official repository. The original VVVVVV is copyright of Terry Cavanagh © 2010-2020.
 
 VVVVVV by [Terry Cavanagh](http://distractionware.com/), with music by [Magnus Pålsson](http://souleye.madtracker.net/).
