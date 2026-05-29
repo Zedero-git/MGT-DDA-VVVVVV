@@ -2,6 +2,8 @@
 -------
 This is an altered version of the 2010 indie game VVVVVV using the officially released source code on [GitHub](https://github.com/TerryCavanagh/vvvvvv). This is used non-commercially for the experiment for my (Zeb De Roover) master thesis "Adaptive Checkpoints for Flow State Optimization in Video Games", as a student in the Master's program in Game Technology at the Breda University of applied sciences.
 
+To enable the Dynamic Difficulty Adjustment, the variable "ddaEnabled" must be set to true in Game.cpp. If built normally, it will print the data file as a .txt file locally in the location of the game's save files. If built using Emscripten for a browser, it will try to export the data to a spreadsheet using a Google Apps Script. In order to build the game, the game's assets are necessary and need to be placed in MGT-DDA-VVVVVV\desktop_version\build\Debug. This is explained further in the [License](LICENSE.md).
+
 The post-hoc validation of the DDA approach along with the data collected during the experiments, which has been anonymized, is all available in this repository in the folder "appendix" for analysis and review for any future research.
 
 Licenses and many other files are left as-is, directly cloned from the official repository. The original VVVVVV is copyright of Terry Cavanagh © 2010-2020.
